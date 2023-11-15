@@ -15,7 +15,7 @@ class ConcejosmiembrosEntry extends Model
   protected $primaryKey = "ID";
 }
 
-class Autoridad_tradicionalEntry extends Model
+class AutoridadtradicionalEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_autoridad_tradicional";

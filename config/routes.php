@@ -2,6 +2,7 @@
 use Slim\App;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
+use App\Controllers\AsociacionController;
 
 return function (App $app)
 {
@@ -35,6 +36,16 @@ return function (App $app)
          $app->post("/create-user-gt",[UserController::class,'createuserGt']);
          $app->put("/edit-user-gt/{id}",[UserController::class,'editUserGt']); */
        });
+
+       $app->group("/asociacion",function($app)
+      {
+         $app->get("/view-asociacion",[AsociacionController::class, 'viewAsociacion']);
+         $app->get("/view-asociacion/{id}",[AsociacionController::class,'viewAsociacionid']);
+         $app->post("/create-asociacion",[AsociacionController::class,'createAsociacion']);
+         $app->put("/edit-asociacion/{id}",[AsociacionController::class,'editAsociacion']);
+         $app->delete("/delete-asociacion/{id}", [AsociacionController::class, "deleteAsociacion"]);
+      });
+
 
     /*   $app->group("/clientecandidato",function($app)
       {
