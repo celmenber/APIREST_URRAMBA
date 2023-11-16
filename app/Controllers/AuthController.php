@@ -3,12 +3,15 @@
 namespace  App\Controllers;
 
 use App\Models\LoginEntry;
+
 use App\Requests\CustomRequestHandler;
 use App\Response\CustomResponse;
 use App\Validation\Validator;
+use Respect\Validation\Validator as v;
+
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Respect\Validation\Validator as v;
+
 
 class AuthController
 {

@@ -3,6 +3,8 @@ use Slim\App;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Controllers\AsociacionController;
+use App\Controllers\ConcejocomunitarioController;
+use App\Controllers\ParametricasController;
 
 return function (App $app)
 {
@@ -46,6 +48,54 @@ return function (App $app)
          $app->delete("/delete-asociacion/{id}", [AsociacionController::class, "deleteAsociacion"]);
       });
 
+      $app->group("/concejocomunitario",function($app)
+      {
+         $app->get("/view-concejocomunitario",[ConcejocomunitarioController::class, 'viewConcejocomunitario']);
+         $app->get("/view-concejocomunitario/{id}",[ConcejocomunitarioController::class,'viewConcejocomunitarioId']);
+         $app->post("/create-concejocomunitario",[ConcejocomunitarioController::class,'createConcejocomunitario']);
+         $app->put("/edit-concejocomunitario/{id}",[ConcejocomunitarioController::class,'editConcejocomunitario']);
+         $app->delete("/delete-concejocomunitario/{id}", [ConcejocomunitarioController::class, "deleteConcejocomunitario"]);
+      });
+
+      $app->group("/autoridatradicional",function($app)
+      {
+         $app->get("/view-autoridatradicional",[ConcejocomunitarioController::class, 'viewAutoridaTradicional']);
+         $app->get("/view-autoridatradicional/{id}",[ConcejocomunitarioController::class,'viewAutoridaTradicionalId']);
+         $app->post("/create-autoridatradicional",[ConcejocomunitarioController::class,'createAutoridaTradicional']);
+         $app->put("/edit-autoridatradicional/{id}",[ConcejocomunitarioController::class,'editAutoridaTradicional']);
+         $app->patch("/estado-concejocomunitario/{id}",[ConcejocomunitarioController::class,'estadoAutoridaTradiciona']);
+         $app->delete("/delete-autoridatradicional/{id}", [ConcejocomunitarioController::class, "deleteAutoridaTradicional"]);
+      });
+
+       $app->group("/miembrosconcejo",function($app)
+      {
+         $app->get("/view-miembrosconcejo",[ConcejocomunitarioController::class, 'viewMiembrosConcejo']);
+         $app->get("/view-miembrosconcejo/{id}",[ConcejocomunitarioController::class,'viewMiembrosConcejoId']);
+         $app->post("/create-miembrosconcejo",[ConcejocomunitarioController::class,'createMiembrosConcejo']);
+         $app->put("/edit-miembrosconcejo/{id}",[ConcejocomunitarioController::class,'editMiembrosConcejo']);
+         $app->patch("/estado-miembrosconcejo/{id}",[ConcejocomunitarioController::class,'estadoMiembrosConcejo']);
+         $app->delete("/delete-miembrosconcejo/{id}", [ConcejocomunitarioController::class, "deleteMiembrosConcejo"]);
+      });
+
+       $app->group("/parametros",function($app)
+      {
+         $app->get("/view-departamento",[ParametricasController::class, 'viewDepartamento']);
+         $app->patch("/estado-departamento/{id}",[ParametricasController::class,'estadoDepartamento']);
+         $app->get("/view-municipio",[ParametricasController::class, 'viewMunicipio']);
+         $app->patch("/estado-municipio/{id}",[ParametricasController::class,'estadoMunicipio']);
+         $app->get("/view-corregimiento",[ParametricasController::class, 'viewCorregimiento']);
+         $app->patch("/estado-corregimiento/{id}",[ParametricasController::class,'estadoCorregimiento']);
+         $app->get("/view-veredas_barrios",[ParametricasController::class, 'viewVeredas_barrios']);
+         $app->patch("/estado-veredas_barrios/{id}",[ParametricasController::class,'estadoVeredas_barrios']);
+         $app->get("/view-escolaridad",[ParametricasController::class, 'viewEscolaridad']);
+         $app->patch("/estado-escolaridad/{id}",[ParametricasController::class,'estadoEscolaridad']);
+         $app->get("/view-parentesco",[ParametricasController::class, 'viewParentesco']);
+         $app->patch("/estado-parentesco/{id}",[ParametricasController::class,'estadoParentesco']);
+         $app->get("/view-orientacion_sexual",[ParametricasController::class, 'viewOrientacion_sexual']);
+         $app->patch("/estado-orientacion_sexual/{id}",[ParametricasController::class,'estadoOrientacion_sexual']);
+         $app->get("/view-logo",[ParametricasController::class, 'viewLogo']);
+      });
+
 
     /*   $app->group("/clientecandidato",function($app)
       {
@@ -78,57 +128,7 @@ return function (App $app)
          $app->patch("/estado-pos/{id}",[ClientePosController::class,'estadoclientePos']);
          $app->delete("/delete-pos/{id}", [ClientePosController::class, "deleteClientePos"]);
       });
-
-      $app->group("/clienteplanes",function($app)
-      {
-         $app->get("/view-planes",[ClientePosController::class, 'viewCliPlanesGet']);
-         $app->get("/view-planes/{id}",[ClientePosController::class,'viewCliPlanesGetid']);
-         $app->post("/create-planes",[ClientePosController::class,'createcliPlanesEntry']);
-         $app->put("/edit-planes/{id}",[ClientePosController::class,'editacliPlanesEntry']);
-         $app->delete("/delete-planes/{id}", [ClientePosController::class, "deleteCliPlanes"]);
-      });
-
-      $app->group("/clientemodulos",function($app)
-      {
-         $app->get("/view-modulo",[ClientePosController::class, 'viewCliModulosGet']);
-         $app->get("/view-modulo/{id}",[ClientePosController::class,'viewCliModulosGetid']);
-         $app->post("/create-modulo",[ClientePosController::class,'createcliModuloEntry']);
-         $app->put("/edit-modulo/{id}",[ClientePosController::class,'editacliModuloEntry']);
-         $app->delete("/delete-modulo/{id}", [ClientePosController::class, "deleteCliModulos"]);
-      });
-
-      $app->group("/mensajetexto",function($app)
-      {
-         $app->get("/view-smstexto",[ClientePosController::class, 'viewSmsTextoGet']);
-         $app->get("/view-smstexto/{id}",[ClientePosController::class,'viewSmsTextoGetid']);
-         $app->post("/create-smstexto",[ClientePosController::class,'createSmsTextoEntry']);
-         $app->put("/edit-smstexto/{id}",[ClientePosController::class,'editaSmsTextoEntry']);
-         $app->delete("/delete-smstexto/{id}", [ClientePosController::class, "deleteSmsTexto"]);
-      });
-
-      $app->group("/mensajevoz",function($app)
-      {
-         $app->get("/view-smsvoz",[ClientePosController::class, 'viewSmsVozGet']);
-         $app->get("/view-smsvoz/{id}",[ClientePosController::class,'viewSmsVozGetid']);
-         $app->post("/create-smsvoz",[ClientePosController::class,'createSmsVozEntry']);
-         $app->put("/edit-smsvoz/{id}",[ClientePosController::class,'editaSmsVozEntry']);
-         $app->delete("/delete-smsvoz/{id}", [ClientePosController::class, "deleteSmsVoz"]);
-      });
-
-      $app->group("/smsenvios",function($app)
-      {
-         $app->get("/view-envios",[ClientePosController::class, 'viewSmsEnviosGet']);
-         $app->get("/view-envios/{id}",[ClientePosController::class,'viewSmsEnviosGetid']);
-         $app->post("/create-envios",[ClientePosController::class,'createSmsEnviosEntry']);
-         $app->put("/edit-envios/{id}",[ClientePosController::class,'editaSmsEnviadosEntry']);
-         $app->delete("/delete-envios/{id}", [ClientePosController::class, "deleteSmsEnvios"]);
-      });
-
-      $app->group("/smsvalor",function($app)
-      {
-         $app->get("/view-valor",[ClientePosController::class, 'viewSmsValorGet']);
-         $app->post("/create-valor",[ClientePosController::class,'SmsValorEntry']);
-      }); */
+ */
 
    });
 };

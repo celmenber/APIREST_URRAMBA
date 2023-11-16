@@ -6,14 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 class ParametricasEntry extends Model
 {
   public $timestamps = false;
-  protected $table = "tbl_asociacion";
-  protected $primaryKey = "ID";
-}
-
-
-class DepartamentoEntry extends Model
-{
-  public $timestamps = false;
   protected $table = "tbl_departamento";
   protected $primaryKey = "ID";
 }

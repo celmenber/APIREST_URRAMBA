@@ -12,7 +12,7 @@ use Respect\Validation\Validator as v;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class AsociacionController
+class ConcejocomunitarioController
 {
     protected $customResponse;
 
@@ -173,7 +173,7 @@ class AsociacionController
 
 
     /* DESDE AQUI SE PROCESO EL CRUED DE LA TABLA AURORIDAD TRADICIONAL */
-    public function viewAutoridaTradicinal(Response $response)
+    public function viewAutoridaTradicional(Response $response)
     {
         $AutoridadtradicionalEntry = autoridadtradicionalEntry::select(
             "id_municipio",
@@ -210,7 +210,7 @@ class AsociacionController
         return $this->customResponse->is200Response($response,$AutoridadtradicionalEntry);
     }
 
-     public function viewAutoridaTradicinalId(Response $response,$Id)
+     public function viewAutoridaTradicionalId(Response $response,$Id)
     {
         $AutoridadtradicionalEntry = autoridadtradicionalEntry::select(
             "id_municipio",
@@ -248,7 +248,7 @@ class AsociacionController
         return $this->customResponse->is200Response($response,$AutoridadtradicionalEntry);
     }
 
-    public function deleteAutoridaTradicinal(Response $response,$Id)
+    public function deleteAutoridaTradicional(Response $response,$Id)
     {
         $this->autoridadtradicionalEntry->where(["ID"=>$Id])->delete();
         $responseMessage = "La Autorida Tradicinal fue eliminada successfully";
@@ -312,7 +312,7 @@ class AsociacionController
        }
     }
 
-    public function editAutoridaTradicinal(Request $request,Response $response,$Id)
+    public function editAutoridaTradicional(Request $request,Response $response,$Id)
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
@@ -356,6 +356,35 @@ class AsociacionController
             $autoridadtradicionalEntry->estado              =   $data['Estado'];
             $autoridadtradicionalEntry->fecha_nacimiento    =   $data['Fecha_nacimiento'];
             $autoridadtradicionalEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
+            $autoridadtradicionalEntry->save();
+
+            $responseMessage = array('msg' 
+                            => "La autoridad tradicional Guardada correctamente",'id' 
+                            => $autoridadtradicionalEntry->id);
+
+        return $this->customResponse->is200Response($response,$responseMessage);
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+    }
+
+        public function estadoAutoridaTradiciona(Request $request,Response $response,$Id)
+    {
+       $data = json_decode($request->getBody(),true);
+       $this->validator->validate($request,[
+            "Estado" =>v::notEmpty(),
+         ]); 
+
+     if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+       
+        try{
+            $autoridadtradicionalEntry = AutoridadtradicionalEntry::find($Id);
+            $autoridadtradicionalEntry->estado =  $data['Estado'];
             $autoridadtradicionalEntry->save();
 
             $responseMessage = array('msg' 
@@ -549,6 +578,36 @@ public function deleteMiembrosConcejo(Response $response,$Id)
 
             $responseMessage = array('msg' 
                             => "La autoridad tradicional Guardada correctamente",'id' 
+                            => $concejosmiembrosEntry->id);
+
+        return $this->customResponse->is200Response($response,$responseMessage);
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+    }
+
+
+    public function estadoMiembrosConcejo(Request $request,Response $response,$Id)
+    {
+       $data = json_decode($request->getBody(),true);
+       $this->validator->validate($request,[
+            "Estado" =>v::notEmpty(),
+         ]); 
+
+     if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+
+        try{
+            $concejosmiembrosEntry = ConcejosmiembrosEntry::find($Id);
+            $concejosmiembrosEntry->estado =   $data['Estado'];
+            $concejosmiembrosEntry->save();
+
+            $responseMessage = array('msg' 
+                            => "el Miembro cambio estado correctamente",'id' 
                             => $concejosmiembrosEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
