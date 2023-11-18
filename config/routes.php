@@ -94,6 +94,7 @@ return function (App $app)
          $app->get("/view-orientacion_sexual",[ParametricasController::class, 'viewOrientacion_sexual']);
          $app->patch("/estado-orientacion_sexual/{id}",[ParametricasController::class,'estadoOrientacion_sexual']);
          $app->get("/view-logo",[ParametricasController::class, 'viewLogo']);
+
       });
 
 

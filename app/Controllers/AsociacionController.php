@@ -28,15 +28,15 @@ class AsociacionController {
   /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA ASOCIACION */
     public function viewAsociacion(Response $response)
     {
-     //   $AsociacionEntry = $this->asociacionEntry->get();
+    
         $AsociacionEntry = asociacionEntry::select(
-           "Nit",
-           "Nombre",
-           "Direccion",
-           "Telefono",
-           "Correo",
-           "Id_municipio",
-           "tbl_municipio.NOMBRE as Municipio"
+           "tbl_asociacion.Nit",
+           "tbl_asociacion.Nombre",
+           "tbl_asociacion.Direccion",
+           "tbl_asociacion.Telefono",
+           "tbl_asociacion.Correo",
+           "tbl_asociacion.Id_municipio",
+          "tbl_municipio.Nombre AS municipio"
          )->join(
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
@@ -46,20 +46,19 @@ class AsociacionController {
 
     public function viewAsociacionid(Response $response,$id)
     {
-       // $AsociacionEntry = $this->asociacionEntry->where(["ID"=>$id])->get();
 
         $AsociacionEntry = asociacionEntry::select(
-           "Nit",
-           "Nombre",
-           "Direccion",
-           "Telefono",
-           "Correo",
-           "Id_municipio",
-           "tbl_municipio.Nombre as Municipio"
+           "tbl_asociacion.Nit",
+           "tbl_asociacion.Nombre",
+           "tbl_asociacion.Direccion",
+           "tbl_asociacion.Telefono",
+           "tbl_asociacion.Correo",
+           "tbl_asociacion.Id_municipio",
+           "tbl_municipio.Nombre AS municipio"
          )->join(
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-             ->where("ID","=",$id)
+             ->where("tbl_asociacion.ID","=",$id)
              ->get();
         return $this->customResponse->is200Response($response,$AsociacionEntry);
     }
