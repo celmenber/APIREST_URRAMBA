@@ -49,6 +49,14 @@ class Orientacion_sexualEntry extends Model
   protected $table = "tbl_orientacion_sexual";
   protected $primaryKey = "ID";
 }
+
+class CargosEntry extends Model
+{
+  public $timestamps = false;
+  protected $table = "tbl_cargos";
+  protected $primaryKey = "ID";
+}
+
 class LogoEntry extends Model
 {
   public $timestamps = false;
