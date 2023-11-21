@@ -34,4 +34,108 @@ class ViviendaController {
 
     }
 
+      /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA VUVIENDA */
+    public function viewVivienda(Response $response)
+    {
+        $ViviendaEntry = $this->viviendaEntry->get();
+        return $this->customResponse->is200Response($response,$ViviendaEntry); 
+    }
+
+    public function viewViviendaId(Response $response,$Id)
+    {
+        $ViviendaEntry = $this->viviendaEntry->where(["ID"=>$Id])->get();
+        return $this->customResponse->is200Response($response,$ViviendaEntry);
+    }
+
+    public function deleteVivienda(Response $response,$Id)
+    {
+        $this->viviendaEntry->where(["ID"=>$Id])->delete();
+        $responseMessage = "La Vivienda fue eliminada successfully";  
+        return $this->customResponse->is200Response($response,$responseMessage);
+    }
+
+    public function createVivienda(Request $request,Response $response)
+    {
+       $data = json_decode($request->getBody(),true);
+       $this->validator->validate($request,[
+           "Tipo_inmueble"=>v::notEmpty(),
+           "Zona"=>v::notEmpty(),
+           "Estado"=>v::notEmpty(),
+           "Tenencia"=>v::notEmpty(),
+         ]); 
+
+        if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+
+        try{
+        $viviendaEntry = new ViviendaEntry;
+        $viviendaEntry->tipo_inmueble  =   $data['Tipo_inmueble'];
+        $viviendaEntry->zona           =   $data['Zona'];
+        $viviendaEntry->estado         =   $data['Estado'];
+        $viviendaEntry->tenencia       =   $data['Tenencia'];
+        $viviendaEntry->save();
+        $responseMessage = array('msg' => "Vivienda Guardada correctamente",'id' => $viviendaEntry->id);
+        return $this->customResponse->is200Response($response,$responseMessage);
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+   }
+   public function editVivienda(Request $request,Response $response, $Id)
+   {
+      $data = json_decode($request->getBody(),true);
+      $this->validator->validate($request,[
+          "Tipo_inmueble"=>v::notEmpty(),
+          "Zona"=>v::notEmpty(),
+          "Estado"=>v::notEmpty(),
+          "Tenencia"=>v::notEmpty(),
+        ]); 
+
+       if($this->validator->failed())
+      {
+          $responseMessage = $this->validator->errors;
+          return $this->customResponse->is400Response($response,$responseMessage);
+      } 
+
+       try{
+       $viviendaEntry = ViviendaEntry::find($Id);
+       $viviendaEntry->tipo_inmueble  =   $data['Tipo_inmueble'];
+       $viviendaEntry->zona           =   $data['Zona'];
+       $viviendaEntry->estado         =   $data['Estado'];
+       $viviendaEntry->tenencia       =   $data['Tenencia'];
+       $viviendaEntry->save();
+       $responseMessage = array('msg' => "Vivienda Guardada correctamente",'id' => $viviendaEntry->id);
+       return $this->customResponse->is200Response($response,$responseMessage);
+       }catch(Exception $err){
+       $responseMessage = array("err" => $err->getMessage());
+       return $this->customResponse->is400Response($response,$responseMessage);
+      }
+  }
+  public function estadoVivienda(Request $request,Response $response, $Id)
+  {
+     $data = json_decode($request->getBody(),true);
+     $this->validator->validate($request,[
+         "Estado"=>v::notEmpty(),
+       ]); 
+
+      if($this->validator->failed())
+     {
+         $responseMessage = $this->validator->errors;
+         return $this->customResponse->is400Response($response,$responseMessage);
+     } 
+
+      try{
+      $viviendaEntry = ViviendaEntry::find($Id);
+      $viviendaEntry->estado         =   $data['Estado'];
+      $viviendaEntry->save();
+      $responseMessage = array('msg' => "Estado vivienda cambiado correctamente",'id' => $viviendaEntry->id);
+      return $this->customResponse->is200Response($response,$responseMessage);
+      }catch(Exception $err){
+      $responseMessage = array("err" => $err->getMessage());
+      return $this->customResponse->is400Response($response,$responseMessage);
+     }
+ }
 }

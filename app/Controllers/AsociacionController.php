@@ -63,7 +63,7 @@ class AsociacionController {
         return $this->customResponse->is200Response($response,$AsociacionEntry);
     }
 
-     public function deleteAsociacion(Response $response,$id)
+    public function deleteAsociacion(Response $response,$id)
     {
         $this->asociacionEntry->where(["ID"=>$id])->delete();
         $responseMessage = "La Asociacion fue eliminada successfully";

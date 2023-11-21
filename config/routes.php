@@ -4,6 +4,7 @@ use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Controllers\AsociacionController;
 use App\Controllers\ConcejocomunitarioController;
+use App\Controllers\ViviendaController;
 use App\Controllers\ParametricasController;
 
 return function (App $app)
@@ -96,7 +97,15 @@ return function (App $app)
          $app->get("/view-logo",[ParametricasController::class, 'viewLogo']);
 
       });
-
+      $app->group("/vivienda",function($app)
+      {
+         $app->get("/view-vivienda",[ViviendaController::class, 'viewVivienda']);
+         $app->get("/view-vivienda/{id}",[ViviendaController::class,'viewViviendaId']);
+         $app->post("/create-vivienda",[ViviendaController::class,'createVivienda']);
+         $app->put("/edit-vivienda/{id}",[ViviendaController::class,'editaVivienda']);
+         $app->patch("/estado-vivienda/{id}",[ViviendaController::class,'estadoVivienda']);
+         $app->delete("/delete-vivienda/{id}", [ViviendaController::class, "deleteVivienda"]);
+      });
 
     /*   $app->group("/clientecandidato",function($app)
       {
