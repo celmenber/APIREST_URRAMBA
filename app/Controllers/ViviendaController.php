@@ -58,10 +58,11 @@ class ViviendaController {
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-           "Tipo_inmueble"=>v::notEmpty(),
+           "Id_jefe_hogar"=>v::notEmpty(),
+           "Id_tipo_inmueble"=>v::notEmpty(),
+           "Id_tenencia"=>v::notEmpty(),
            "Zona"=>v::notEmpty(),
            "Estado"=>v::notEmpty(),
-           "Tenencia"=>v::notEmpty(),
          ]); 
 
         if($this->validator->failed())
@@ -72,10 +73,11 @@ class ViviendaController {
 
         try{
         $viviendaEntry = new ViviendaEntry;
-        $viviendaEntry->tipo_inmueble  =   $data['Tipo_inmueble'];
-        $viviendaEntry->zona           =   $data['Zona'];
-        $viviendaEntry->estado         =   $data['Estado'];
-        $viviendaEntry->tenencia       =   $data['Tenencia'];
+        $viviendaEntry->id_jefe_hogar     =   $data['Id_jefe_hogar'];
+        $viviendaEntry->id_tipo_inmueble  =   $data['Id_tipo_inmueble'];
+        $viviendaEntry->id_tenencia       =   $data['Id_tenencia'];
+        $viviendaEntry->zona              =   $data['Zona'];
+        $viviendaEntry->estado            =   $data['Estado'];
         $viviendaEntry->save();
         $responseMessage = array('msg' => "Vivienda Guardada correctamente",'id' => $viviendaEntry->id);
         return $this->customResponse->is200Response($response,$responseMessage);
@@ -88,10 +90,11 @@ class ViviendaController {
    {
       $data = json_decode($request->getBody(),true);
       $this->validator->validate($request,[
-          "Tipo_inmueble"=>v::notEmpty(),
-          "Zona"=>v::notEmpty(),
-          "Estado"=>v::notEmpty(),
-          "Tenencia"=>v::notEmpty(),
+           "Id_jefe_hogar"=>v::notEmpty(),
+           "Id_tipo_inmueble"=>v::notEmpty(),
+           "Id_tenencia"=>v::notEmpty(),
+           "Zona"=>v::notEmpty(),
+           "Estado"=>v::notEmpty(),
         ]); 
 
        if($this->validator->failed())
@@ -101,13 +104,14 @@ class ViviendaController {
       } 
 
        try{
-       $viviendaEntry = ViviendaEntry::find($Id);
-       $viviendaEntry->tipo_inmueble  =   $data['Tipo_inmueble'];
-       $viviendaEntry->zona           =   $data['Zona'];
-       $viviendaEntry->estado         =   $data['Estado'];
-       $viviendaEntry->tenencia       =   $data['Tenencia'];
-       $viviendaEntry->save();
-       $responseMessage = array('msg' => "Vivienda Guardada correctamente",'id' => $viviendaEntry->id);
+        $viviendaEntry = ViviendaEntry::find($Id);
+        $viviendaEntry->id_jefe_hogar     =   $data['Id_jefe_hogar'];
+        $viviendaEntry->id_tipo_inmueble  =   $data['Id_tipo_inmueble'];
+        $viviendaEntry->id_tenencia       =   $data['Id_tenencia'];
+        $viviendaEntry->zona              =   $data['Zona'];
+        $viviendaEntry->estado            =   $data['Estado'];
+        $viviendaEntry->save();
+       $responseMessage = array('msg' => "Vivienda editada correctamente",'id' => $viviendaEntry->id);
        return $this->customResponse->is200Response($response,$responseMessage);
        }catch(Exception $err){
        $responseMessage = array("err" => $err->getMessage());

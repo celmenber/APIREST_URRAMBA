@@ -78,6 +78,18 @@ return function (App $app)
          $app->delete("/delete-miembrosconcejo/{id}", [ConcejocomunitarioController::class, "deleteMiembrosConcejo"]);
       });
 
+       $app->group("/vivienda",function($app)
+      {
+         $app->get("/view-vivienda",[ViviendaController::class, 'viewVivienda']);
+         $app->get("/view-vivienda/{id}",[ViviendaController::class,'viewViviendaId']);
+         $app->post("/create-vivienda",[ViviendaController::class,'createVivienda']);
+         $app->put("/edit-vivienda/{id}",[ViviendaController::class,'editaVivienda']);
+         $app->patch("/estado-vivienda/{id}",[ViviendaController::class,'estadoVivienda']);
+         $app->delete("/delete-vivienda/{id}", [ViviendaController::class, "deleteVivienda"]);
+      });
+
+
+
        $app->group("/parametros",function($app)
       {
          $app->get("/view-departamento",[ParametricasController::class, 'viewDepartamento']);
@@ -94,18 +106,15 @@ return function (App $app)
          $app->patch("/estado-parentesco/{id}",[ParametricasController::class,'estadoParentesco']);
          $app->get("/view-orientacion_sexual",[ParametricasController::class, 'viewOrientacion_sexual']);
          $app->patch("/estado-orientacion_sexual/{id}",[ParametricasController::class,'estadoOrientacion_sexual']);
+         $app->get("/view-tipoinmueble",[ParametricasController::class, 'viewTipoinmueble']);
+         $app->patch("/estado-tipoinmueble/{id}",[ParametricasController::class,'estadoTipoinmueble']);
+         $app->get("/view-tenencia",[ParametricasController::class, 'viewTenencia']);
+         $app->patch("/estado-tenencia/{id}",[ParametricasController::class,'estadoTenencia']);
+         $app->get("/view-tipodocumento",[ParametricasController::class, 'viewTipodocumento']);
+         $app->patch("/estado-tipodocumento/{id}",[ParametricasController::class,'estadoTipodocumento']);
          $app->get("/view-logo",[ParametricasController::class, 'viewLogo']);
+      });
 
-      });
-      $app->group("/vivienda",function($app)
-      {
-         $app->get("/view-vivienda",[ViviendaController::class, 'viewVivienda']);
-         $app->get("/view-vivienda/{id}",[ViviendaController::class,'viewViviendaId']);
-         $app->post("/create-vivienda",[ViviendaController::class,'createVivienda']);
-         $app->put("/edit-vivienda/{id}",[ViviendaController::class,'editaVivienda']);
-         $app->patch("/estado-vivienda/{id}",[ViviendaController::class,'estadoVivienda']);
-         $app->delete("/delete-vivienda/{id}", [ViviendaController::class, "deleteVivienda"]);
-      });
 
     /*   $app->group("/clientecandidato",function($app)
       {
@@ -117,26 +126,6 @@ return function (App $app)
          $app->put("/edit-candidato/{id}",[ClienteCandidatoController::class,'editaCliCandidatoEntry']);
          $app->patch("/estado-candidato/{id}",[ClienteCandidatoController::class,'estadoCliCandidato']);
          $app->delete("/delete-candidato/{id}", [ClienteCandidatoController::class, "deleteCliCandidato"]);
-      });
-
-      $app->group("/clientecobros",function($app)
-      {
-         $app->get("/view-cobros",[ClienteCobrosController::class, 'viewclienteCobrosGet']);
-         $app->get("/view-cobros/{id}",[ClienteCobrosController::class,'viewclienteCobrosGetid']);
-         $app->post("/create-cobros",[ClienteCobrosController::class,'createClienteCobrosEntry']);
-         $app->put("/edit-cobros/{id}",[ClienteCobrosController::class,'editaClienteCobrosEntry']);
-         $app->patch("/estado-cobros/{id}",[ClienteCobrosController::class,'estadoclienteCobros']);
-         $app->delete("/delete-cobros/{id}", [ClienteCobrosController::class, "deleteClienteCobros"]);
-      });
-
-      $app->group("/clientepos",function($app)
-      {
-         $app->get("/view-pos",[ClientePosController::class, 'viewclientePosGet']);
-         $app->get("/view-pos/{id}",[ClientePosController::class,'viewclientePosGetid']);
-         $app->post("/create-pos",[ClientePosController::class,'createclientePosEntry']);
-         $app->put("/edit-pos/{id}",[ClientePosController::class,'editaclientePosEntry']);
-         $app->patch("/estado-pos/{id}",[ClientePosController::class,'estadoclientePos']);
-         $app->delete("/delete-pos/{id}", [ClientePosController::class, "deleteClientePos"]);
       });
  */
 

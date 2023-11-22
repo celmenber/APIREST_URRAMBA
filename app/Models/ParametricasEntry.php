@@ -2,7 +2,6 @@
 namespace  App\Models;
 use Illuminate\Database\Eloquent\Model;
 
-
 class ParametricasEntry extends Model
 {
   public $timestamps = false;
@@ -54,6 +53,28 @@ class CargosEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_cargos";
+  protected $primaryKey = "ID";
+}
+
+
+class TenenciaEntry extends Model
+{
+  public $timestamps = false;
+  protected $table = "tbl_tenencia";
+  protected $primaryKey = "ID";
+}
+
+class TipoinmuebleEntry extends Model
+{
+  public $timestamps = false;
+  protected $table = "tbl_tipo_inmueble";
+  protected $primaryKey = "ID";
+}
+
+class Tipo_documentoEntry extends Model
+{
+  public $timestamps = false;
+  protected $table = "tbl_tipo_documento";
   protected $primaryKey = "ID";
 }
 

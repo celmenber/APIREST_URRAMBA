@@ -9,8 +9,10 @@ use App\Models\Veredas_barriosEntry;
 use App\Models\EscolaridadEntry;
 use App\Models\ParentescoEntry;
 use App\Models\Orientacion_sexualEntry;
+use App\Models\TenenciaEntry;
+use App\Models\TipoinmuebleEntry;
 use App\Models\LogoEntry;
-
+use App\Models\Tipo_documentoEntry;
 
 use App\Response\CustomResponse;
 use App\Validation\Validator;
@@ -29,6 +31,9 @@ class ParametricasController
     protected $escolaridadEntry;
     protected $parentescoEntry;
     protected $orientacion_sexualEntry;
+    protected $tenenciaEntry;
+    protected $tipoinmuebleEntry;
+    protected $tipodocumentoEntry;
     protected $logoEntry;
     protected $customResponse;
     protected $validator;
@@ -42,6 +47,9 @@ class ParametricasController
         $this->escolaridadEntry = new EscolaridadEntry;
         $this->parentescoEntry = new ParentescoEntry;
         $this->orientacion_sexualEntry = new Orientacion_sexualEntry;
+        $this->tenenciaEntry = new TenenciaEntry;
+        $this->tipoinmuebleEntry  = new TipoinmuebleEntry;
+        $this->tipodocumentoEntry  = new Tipo_documentoEntry;
         $this->logoEntry = new LogoEntry;
         $this->customResponse = new CustomResponse();
         $this->validator = new Validator();
@@ -295,6 +303,121 @@ class ParametricasController
             $responseMessage = array('msg' 
                             => "Se cambio estado correctamente",'id' 
                             => $orientacion_sexualEntry->id);
+
+        return $this->customResponse->is200Response($response,$responseMessage);
+
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+    }
+
+
+    /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA PARAMETRICA  TIPO INMUEBLE*/
+    public function viewTipoinmueble(Response $response)
+    {
+        $TipoinmuebleEntry = $this->tipoinmuebleEntry->get();
+        return $this->customResponse->is200Response($response,$TipoinmuebleEntry);
+    }
+
+    public function estadoTipoinmueble(Request $request,Response $response,$Id)
+    {
+       $data = json_decode($request->getBody(),true);
+       $this->validator->validate($request,[
+            "Estado" =>v::notEmpty(),
+         ]); 
+
+     if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+
+        try{
+            $tipoinmuebleEntry = TipoinmuebleEntry::find($Id);
+            $tipoinmuebleEntry->Estado =   $data['Estado'];
+            $tipoinmuebleEntry->save();
+
+            $responseMessage = array('msg' 
+                            => "Se cambio estado correctamente",'id' 
+                            => $tipoinmuebleEntry->id);
+
+        return $this->customResponse->is200Response($response,$responseMessage);
+
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+    }
+
+
+   /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA PARAMETRICA TENENCIAS */
+    public function viewTenencia(Response $response)
+    {
+        $TenenciaEntry = $this->tenenciaEntry->get();
+        return $this->customResponse->is200Response($response,$TenenciaEntry);
+    }
+
+    public function estadoTenencia(Request $request,Response $response,$Id)
+    {
+       $data = json_decode($request->getBody(),true);
+       $this->validator->validate($request,[
+            "Estado" =>v::notEmpty(),
+         ]); 
+
+     if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+
+        try{
+            $tenenciaEntry = TenenciaEntry::find($Id);
+            $tenenciaEntry->Estado =   $data['Estado'];
+            $tenenciaEntry->save();
+
+            $responseMessage = array('msg' 
+                            => "Se cambio estado correctamente",'id' 
+                            => $tenenciaEntry->id);
+
+        return $this->customResponse->is200Response($response,$responseMessage);
+
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+    }
+
+
+
+    /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA PARAMETRICA TIPO DOCUMENTO */
+    public function viewTipodocumento(Response $response)
+    {
+        $Tipo_documentoEntry = $this->tipodocumentoEntry->get();
+        return $this->customResponse->is200Response($response,$Tipo_documentoEntry);
+    }
+
+    public function estadoTipodocumento(Request $request,Response $response,$Id)
+    {
+       $data = json_decode($request->getBody(),true);
+       $this->validator->validate($request,[
+            "Estado" =>v::notEmpty(),
+         ]); 
+
+     if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+
+        try{
+            $tipodocumentoEntry = Tipo_documentoEntry::find($Id);
+            $tipodocumentoEntry->Estado =   $data['Estado'];
+            $tipodocumentoEntry->save();
+
+            $responseMessage = array('msg' 
+                            => "Se cambio estado correctamente",'id' 
+                            => $tipodocumentoEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
 
