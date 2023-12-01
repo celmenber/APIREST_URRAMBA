@@ -9,6 +9,13 @@ class AsociacionEntry extends Model
   protected $primaryKey = "ID";
 }
 
+class AsociacionEmpleadoEntry extends Model
+{
+  public $timestamps = false;
+  protected $table = "tbl_asociacion_empleados";
+  protected $primaryKey = "ID";
+}
+
 
 class Doc_asociacionEntry extends Model
 {

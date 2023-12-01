@@ -68,6 +68,15 @@ return function (App $app)
          $app->delete("/delete-autoridatradicional/{id}", [ConcejocomunitarioController::class, "deleteAutoridaTradicional"]);
       });
 
+       $app->group("/empleados",function($app)
+      {
+         $app->get("/view-empleado",[ViviendaController::class, 'viewAsociacionEmpleado']);
+         $app->get("/view-empleado/{id}",[ViviendaController::class,'viewAsociacionEmpleadoid']);
+         $app->post("/create-empleado",[ViviendaController::class,'createAsociacionEmpleado']);
+         $app->put("/edit-empleado/{id}",[ViviendaController::class,'editarAsociacionEmpleado']);
+         $app->delete("/delete-empleado/{id}", [ViviendaController::class, "deleteAsociacionEmpleado"]);
+      });
+
        $app->group("/miembrosconcejo",function($app)
       {
          $app->get("/view-miembrosconcejo",[ConcejocomunitarioController::class, 'viewMiembrosConcejo']);
@@ -78,7 +87,7 @@ return function (App $app)
          $app->delete("/delete-miembrosconcejo/{id}", [ConcejocomunitarioController::class, "deleteMiembrosConcejo"]);
       });
 
-       $app->group("/vivienda",function($app)
+      $app->group("/vivienda",function($app)
       {
          $app->get("/view-vivienda",[ViviendaController::class, 'viewVivienda']);
          $app->get("/view-vivienda/{id}",[ViviendaController::class,'viewViviendaId']);
