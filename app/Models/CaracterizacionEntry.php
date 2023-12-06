@@ -6,5 +6,5 @@ class CaracterizacionEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_caracterizacion";
-  protected $primaryKey = "ID";
+ // protected $primaryKey = "ID";
 }

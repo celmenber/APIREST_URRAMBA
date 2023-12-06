@@ -7,7 +7,7 @@ class EntregasEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_entrega_articulos";
-  protected $primaryKey = "ID";
+//  protected $primaryKey = "ID";
 }
 
 
@@ -15,5 +15,5 @@ class EvintregajefehEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_evi_entrega_jefeh";
-  protected $primaryKey = "ID";
+//  protected $primaryKey = "ID";
 }

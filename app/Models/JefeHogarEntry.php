@@ -6,5 +6,5 @@ class JefeHogarEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_jefe_hogar";
-  protected $primaryKey = "ID";
+ // protected $primaryKey = "ID";
 }

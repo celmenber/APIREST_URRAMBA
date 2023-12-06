@@ -99,10 +99,9 @@ class AsociacionController {
         $asociacionEntry->direccion     =   $data['Direccion'];
         $asociacionEntry->telefono      =   $data['Telefono'];
         $asociacionEntry->correo        =   $data['Correo'];
-
         $asociacionEntry->save();
         $responseMessage = array('msg' 
-                        => "Asociacion Guardada correctamente",'id' 
+                        => "Asociacion Guardada correctamente",'id'
                         => $asociacionEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
@@ -139,9 +138,10 @@ class AsociacionController {
         $asociacionEntry->correo        =   $data['Correo'];
 
         $asociacionEntry->save();
+        
         $responseMessage = array('msg' 
                         => "La asociacion editada correctamente",'id' 
-                        => $asociacionEntry->id);
+                        => $asociacionEntry->ID);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){

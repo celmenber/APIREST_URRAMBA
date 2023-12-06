@@ -7,7 +7,7 @@ class ViviendaEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_inmueble";
-  protected $primaryKey = "ID";
+ // protected $primaryKey = "ID";
 }
 
 
@@ -15,12 +15,12 @@ class EnceresEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_enceres";
-  protected $primaryKey = "ID";
+//  protected $primaryKey = "ID";
 }
 
 class ImgInmuebleEntry extends Model
 {
   public $timestamps = false;
   protected $table = "tbl_img_inmueble";
-  protected $primaryKey = "ID";
+ // protected $primaryKey = "ID";
 }
