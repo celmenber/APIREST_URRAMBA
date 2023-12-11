@@ -47,7 +47,27 @@ class UserController
 /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA USER LOGIN */
     public function viewUser(Response $response)
     {
-        $guestEntries = userEntry::select("ID_USER","ID_ROLL","USERNAME","ESTADO","AVATAR","FECHA")->get();
+        $guestEntries = userEntry::select(
+            "tbl_user_login.ID_USER",
+            "tbl_user_login.ID_ROLL",
+            "tbl_user_login.USERNAME",
+            "tbl_user_login.ESTADO",
+            "tbl_user_login.AVATAR",
+            "tbl_user_login.FECHA",
+            "tbl_user_roll.NOMBRE as USER_ROL",
+            "tbl_gt_user.ID_EMPLEADO",
+            "tbl_gt_user.ID_AUTORIDAD",
+            "tbl_gt_user.TIPO_USER",
+            )
+            ->join(
+                "tbl_user_roll", 
+                "tbl_user_login.ID_ROLL","=","tbl_user_roll.ID")
+  /*           ->join(
+                "tbl_gt_user", 
+                "tbl_gt_user.ID_USER","=","tbl_user_roll.ID") */
+            ->get();
+
+
         return $this->customResponse->is200Response($response,$guestEntries); 
     }
 
