@@ -100,9 +100,28 @@ class AsociacionController {
         $asociacionEntry->telefono      =   $data['Telefono'];
         $asociacionEntry->correo        =   $data['Correo'];
         $asociacionEntry->save();
-        $responseMessage = array('msg' 
-                        => "Asociacion Guardada correctamente",'id'
-                        => $asociacionEntry->id);
+
+        $data = asociacionEntry::select(
+           "tbl_asociacion.Nit",
+           "tbl_asociacion.Nombre",
+           "tbl_asociacion.Direccion",
+           "tbl_asociacion.Telefono",
+           "tbl_asociacion.Correo",
+           "tbl_asociacion.Id_municipio",
+           "tbl_municipio.Nombre AS municipio"
+         )->join(
+                "tbl_municipio", 
+                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
+             ->where("tbl_asociacion.ID","=",$asociacionEntry->id)
+             ->first();
+
+
+        $responseMessage = array(
+                        'msg'  => "Asociacion Guardada correctamente",
+                        'datos' =>  $data,
+                        'id' => $asociacionEntry->id);
+
+
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -141,7 +160,7 @@ class AsociacionController {
         
         $responseMessage = array('msg' 
                         => "La asociacion editada correctamente",'id' 
-                        => $asociacionEntry->ID);
+                        => $asociacionEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
