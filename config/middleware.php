@@ -30,8 +30,9 @@ return function (App $app)
             $response = $handler->handle($request);
             return $response
                     ->withHeader('Access-Control-Allow-Origin', '*')
-                    ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-                    ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+                    ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Access-Control-Request-Method, Accept, Origin, Authorization')
+                    ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+                    ->withHeader('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
         });
 
   $app->addErrorMiddleware(true,true,true);
