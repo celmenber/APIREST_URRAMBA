@@ -70,11 +70,11 @@ return function (App $app)
 
        $app->group("/empleados",function($app)
       {
-         $app->get("/view-empleado",[ViviendaController::class, 'viewAsociacionEmpleado']);
-         $app->get("/view-empleado/{id}",[ViviendaController::class,'viewAsociacionEmpleadoid']);
-         $app->post("/create-empleado",[ViviendaController::class,'createAsociacionEmpleado']);
-         $app->put("/edit-empleado/{id}",[ViviendaController::class,'editarAsociacionEmpleado']);
-         $app->delete("/delete-empleado/{id}", [ViviendaController::class, "deleteAsociacionEmpleado"]);
+         $app->get("/view-empleado",[AsociacionController::class, 'viewAsociacionEmpleado']);
+         $app->get("/view-empleado/{id}",[AsociacionController::class,'viewAsociacionEmpleadoid']);
+         $app->post("/create-empleado",[AsociacionController::class,'createAsociacionEmpleado']);
+         $app->put("/edit-empleado/{id}",[AsociacionController::class,'editarAsociacionEmpleado']);
+         $app->delete("/delete-empleado/{id}", [AsociacionController::class, "deleteAsociacionEmpleado"]);
       });
 
        $app->group("/miembrosconcejo",function($app)

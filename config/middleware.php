@@ -1,5 +1,9 @@
 <?php
 use Slim\App;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Routing\RouteContext;
 
 return function (App $app)
 {
@@ -23,17 +27,37 @@ return function (App $app)
           }
       ])
   );
-  
- $app->addRoutingMiddleware();
+
+  $app->addBodyParsingMiddleware();
+
+// This middleware will append the response header Access-Control-Allow-Methods with all allowed methods
+$app->add(function (Request $request, RequestHandlerInterface $handler): Response {
+    $routeContext = RouteContext::fromRequest($request);
+    $routingResults = $routeContext->getRoutingResults();
+    $methods = $routingResults->getAllowedMethods();
+    $requestHeaders = $request->getHeaderLine('Access-Control-Request-Headers');
+
+    $response = $handler->handle($request);
+
+    $response = $response->withHeader('Access-Control-Allow-Origin','*', 'http://localhost:3000');
+    $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
+    $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
+    $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
+
+    return $response;
+});
  
- $app->add(function ($request, $handler) {
-            $response = $handler->handle($request);
-            return $response
-                    ->withHeader('Access-Control-Allow-Origin', '*')
+/*  $app->add(function ($request, $handler) {
+            $resp = $handler->handle($request);
+            return $resp
+                    ->withHeader('Access-Control-Allow-Origin', '*','http://localhost:3000')
                     ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Access-Control-Request-Method, Accept, Origin, Authorization')
                     ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-                    ->withHeader('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-        });
+                    ->withHeader('Allow', 'GET, POST, PUT, DELETE,OPTIONS')
+                    ->withHeader('Access-Control-Max-Age', '3600')
+                    ->withHeader('Content-type', 'application/json, charset=utf-8');
+        }); */
 
-  $app->addErrorMiddleware(true,true,true);
+  //$app->addRoutingMiddleware();
+  //$app->addErrorMiddleware(true,true,true);
 };

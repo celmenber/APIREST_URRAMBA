@@ -50,24 +50,32 @@ class UserController
         $guestEntries = userEntry::select(
             "tbl_user_login.ID_USER",
             "tbl_user_login.ID_ROLL",
+            "tbl_user_login.ID_AUT",
+            "tbl_user_login.ID_EMP",
             "tbl_user_login.USERNAME",
             "tbl_user_login.ESTADO",
             "tbl_user_login.AVATAR",
             "tbl_user_login.FECHA",
             "tbl_user_roll.NOMBRE as USER_ROL",
-            "tbl_gt_user.ID_EMPLEADO",
-            "tbl_gt_user.ID_AUTORIDAD",
-            "tbl_gt_user.TIPO_USER",
+            "tbl_asociacion_empleados.documentos AS emp_documento",
+            "tbl_asociacion_empleados.nombres AS emp_nombres",
+            "tbl_asociacion_empleados.apellidos AS emp_apellidos",
+            "tbl_asociacion_empleados.telefono AS emp_telefono",
+            "tbl_autoridad_tradicional.documentos AS aut_documentos",
+            "tbl_autoridad_tradicional.nombres AS aut_nombres",
+            "tbl_autoridad_tradicional.apellidos AS aut_apellidos",
+            "tbl_autoridad_tradicional.telefono AS aut_telefono",
             )
             ->join(
-                "tbl_user_roll", 
+                "tbl_user_roll",
                 "tbl_user_login.ID_ROLL","=","tbl_user_roll.ID")
-  /*           ->join(
-                "tbl_gt_user", 
-                "tbl_gt_user.ID_USER","=","tbl_user_roll.ID") */
+             ->leftJoin(
+                "tbl_asociacion_empleados", 
+                "tbl_user_login.ID_EMP","=","tbl_asociacion_empleados.ID") 
+             ->leftJoin(
+                "tbl_autoridad_tradicional",
+                "tbl_user_login.ID_AUT","=","tbl_autoridad_tradicional.ID")
             ->get();
-
-
         return $this->customResponse->is200Response($response,$guestEntries); 
     }
 

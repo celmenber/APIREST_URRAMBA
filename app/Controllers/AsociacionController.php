@@ -34,13 +34,9 @@ class AsociacionController {
     {
     
         $AsociacionEntry = asociacionEntry::select(
-           "tbl_asociacion.Nit",
-           "tbl_asociacion.Nombre",
-           "tbl_asociacion.Direccion",
-           "tbl_asociacion.Telefono",
-           "tbl_asociacion.Correo",
+           "tbl_asociacion.*",
            "tbl_asociacion.Id_municipio",
-          "tbl_municipio.Nombre AS municipio"
+           "tbl_municipio.Nombre AS municipio"
          )->join(
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
@@ -52,13 +48,9 @@ class AsociacionController {
     {
 
         $AsociacionEntry = asociacionEntry::select(
-           "tbl_asociacion.Nit",
-           "tbl_asociacion.Nombre",
-           "tbl_asociacion.Direccion",
-           "tbl_asociacion.Telefono",
-           "tbl_asociacion.Correo",
-           "tbl_asociacion.Id_municipio",
-           "tbl_municipio.Nombre AS municipio"
+             "tbl_asociacion.*",
+             "tbl_asociacion.Id_municipio",
+             "tbl_municipio.Nombre AS municipio"
          )->join(
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
@@ -187,15 +179,15 @@ class AsociacionController {
             "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-         )->join(
+         )->leftjoin(
                 "tbl_municipio", 
-                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-          ->join(
+                "tbl_asociacion_empleados.Id_municipio","=","tbl_municipio.ID")
+          ->leftjoin(
                 "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
+                "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+          ->leftjoin(
                 "tbl_tipo_documento", 
-                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")
+                "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
           ->get();
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
@@ -204,7 +196,6 @@ class AsociacionController {
     {
 
         $AsociacionEmpleadoEntry = asociacionEmpleadoEntry::select(
-           "tbl_asociacion_empleados.id_municipio",
             "tbl_asociacion_empleados.id_barrio_vereda",
             "tbl_asociacion_empleados.id_tipo_documento",
             "tbl_asociacion_empleados.documentos",
@@ -214,20 +205,15 @@ class AsociacionController {
             "tbl_asociacion_empleados.telefono",
             "tbl_asociacion_empleados.correo",
             "tbl_asociacion_empleados.estado",
-            "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-         )->join(
-                "tbl_municipio", 
-                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-          ->join(
+         )->leftjoin(
                 "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
+                "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+          ->leftjoin(
                 "tbl_tipo_documento", 
-                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")
-
-            ->where("tbl_asociacion.ID","=",$id)
+                "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
+            ->where("tbl_asociacion_empleados.ID","=",$id)
             ->get();
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
@@ -281,7 +267,7 @@ class AsociacionController {
                             => "El empleado de la asociacion se guardo correctamente",'id' 
                             => $asociacionEmpleadoEntry->id);
 
-        return $this->customResponse->is200Response($response,$responseMessage);
+        return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);

@@ -523,7 +523,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
                             => "La autoridad tradicional Guardada correctamente",'id' 
                             => $concejosmiembrosEntry->id);
 
-        return $this->customResponse->is200Response($response,$responseMessage);
+        return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);
