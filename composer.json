@@ -8,7 +8,8 @@
         "tuupola/slim-jwt-auth": "^3.5",
         "firebase/php-jwt": "^5.2",
         "illuminate/database": "^7.11",
-        "selective/basepath": "^2.1"
+        "selective/basepath": "^2.1",
+        "tuupola/cors-middleware": "1.0"
     },
 
     "autoload": {

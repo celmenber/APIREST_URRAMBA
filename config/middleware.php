@@ -4,6 +4,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
+use Tuupola\Middleware\CorsMiddleware;
 
 return function (App $app)
 {
@@ -30,6 +31,24 @@ return function (App $app)
 
   $app->addBodyParsingMiddleware();
 
+  //$app->add(new Tuupola\Middleware\CorsMiddleware);
+/*   $app->add(new Tuupola\Middleware\CorsMiddleware([
+    "origin" => ["*"],
+    "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    "headers.allow" => [],
+    "headers.expose" => [],
+    "credentials" => false,
+    "cache" => 0,
+]));
+ */
+$app->add(new Tuupola\Middleware\CorsMiddleware([
+    "origin" => ["*"],
+    "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
+    "headers.expose" => ["Etag"],
+    "credentials" => true,
+    "cache" => 86400
+]));
 // This middleware will append the response header Access-Control-Allow-Methods with all allowed methods
 $app->add(function (Request $request, RequestHandlerInterface $handler): Response {
     $routeContext = RouteContext::fromRequest($request);
@@ -39,7 +58,7 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
 
     $response = $handler->handle($request);
 
-    $response = $response->withHeader('Access-Control-Allow-Origin','*', 'http://localhost:3000');
+    $response = $response->withHeader('Access-Control-Allow-Origin','*');
     $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
     $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
     $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -58,6 +77,6 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
                     ->withHeader('Content-type', 'application/json, charset=utf-8');
         }); */
 
-  //$app->addRoutingMiddleware();
-  //$app->addErrorMiddleware(true,true,true);
+  $app->addRoutingMiddleware();
+  $app->addErrorMiddleware(true,true,true);
 };

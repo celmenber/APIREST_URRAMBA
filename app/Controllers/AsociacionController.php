@@ -252,7 +252,6 @@ class AsociacionController {
             $asociacionEmpleadoEntry = new AsociacionEmpleadoEntry;
             $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
             $asociacionEmpleadoEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
-            $asociacionEmpleadoEntry->id_corregimiento    =   $data['Id_corregimiento'];
             $asociacionEmpleadoEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
             $asociacionEmpleadoEntry->documentos          =   $data['Documentos'];
             $asociacionEmpleadoEntry->nombres             =   $data['Nombres'];
@@ -301,7 +300,6 @@ class AsociacionController {
             $asociacionEmpleadoEntry = AsociacionEmpleadoEntry::find($id);
             $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
             $asociacionEmpleadoEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
-            $asociacionEmpleadoEntry->id_corregimiento    =   $data['Id_corregimiento'];
             $asociacionEmpleadoEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
             $asociacionEmpleadoEntry->documentos          =   $data['Documentos'];
             $asociacionEmpleadoEntry->nombres             =   $data['Nombres'];
