@@ -29,26 +29,16 @@ return function (App $app)
       ])
   );
 
-  $app->addBodyParsingMiddleware();
 
-  //$app->add(new Tuupola\Middleware\CorsMiddleware);
-/*   $app->add(new Tuupola\Middleware\CorsMiddleware([
-    "origin" => ["*"],
-    "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    "headers.allow" => [],
-    "headers.expose" => [],
-    "credentials" => false,
-    "cache" => 0,
-]));
- */
-$app->add(new Tuupola\Middleware\CorsMiddleware([
+
+/* $app->add(new Tuupola\Middleware\CorsMiddleware([
     "origin" => ["*"],
     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
     "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
     "headers.expose" => ["Etag"],
     "credentials" => true,
     "cache" => 86400
-]));
+])); */
 // This middleware will append the response header Access-Control-Allow-Methods with all allowed methods
 $app->add(function (Request $request, RequestHandlerInterface $handler): Response {
     $routeContext = RouteContext::fromRequest($request);

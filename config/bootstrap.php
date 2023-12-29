@@ -21,8 +21,9 @@ $middleware = require_once __DIR__ . '/middleware.php';
 $middleware($app);
 
 // Add Slim routing middleware
+$app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
-
+$app->add(new Tuupola\Middleware\CorsMiddleware);
 $app->addErrorMiddleware(true, true, true);
 
 $routes = require_once  __DIR__ .'/routes.php'; $routes($app);

@@ -166,6 +166,7 @@ class AsociacionController {
     {
     
         $AsociacionEmpleadoEntry = asociacionEmpleadoEntry::select(
+            "tbl_asociacion_empleados.id_asociacion",
             "tbl_asociacion_empleados.id_municipio",
             "tbl_asociacion_empleados.id_barrio_vereda",
             "tbl_asociacion_empleados.id_tipo_documento",
@@ -176,6 +177,7 @@ class AsociacionController {
             "tbl_asociacion_empleados.telefono",
             "tbl_asociacion_empleados.correo",
             "tbl_asociacion_empleados.estado",
+            "tbl_asociacion.Nombre AS asociacion",
             "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
@@ -188,6 +190,9 @@ class AsociacionController {
           ->leftjoin(
                 "tbl_tipo_documento", 
                 "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
+          ->leftjoin(
+                "tbl_asociacion", 
+                "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
           ->get();
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
@@ -196,6 +201,7 @@ class AsociacionController {
     {
 
         $AsociacionEmpleadoEntry = asociacionEmpleadoEntry::select(
+            "tbl_asociacion_empleados.id_asociacion",
             "tbl_asociacion_empleados.id_barrio_vereda",
             "tbl_asociacion_empleados.id_tipo_documento",
             "tbl_asociacion_empleados.documentos",
