@@ -31,14 +31,15 @@ return function (App $app)
 
 
 
-/* $app->add(new Tuupola\Middleware\CorsMiddleware([
-    "origin" => ["*"],
+$app->add(new Tuupola\Middleware\CorsMiddleware([
+    "origin" => ["*","http://localhost:3000"],
     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
     "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
     "headers.expose" => ["Etag"],
     "credentials" => true,
     "cache" => 86400
-])); */
+]));
+
 // This middleware will append the response header Access-Control-Allow-Methods with all allowed methods
 $app->add(function (Request $request, RequestHandlerInterface $handler): Response {
     $routeContext = RouteContext::fromRequest($request);
@@ -48,7 +49,7 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
 
     $response = $handler->handle($request);
 
-    $response = $response->withHeader('Access-Control-Allow-Origin','*');
+    $response = $response->withHeader('Access-Control-Allow-Origin','*','http://localhost:3000');
     $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
     $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
     $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');

@@ -2,6 +2,7 @@
 namespace  App\Controllers;
 use App\Models\AsociacionEntry;
 use App\Models\AsociacionEmpleadoEntry;
+use App\Models\UserEntry;
 
 use App\Response\CustomResponse;
 use App\Validation\Validator;
@@ -55,7 +56,7 @@ class AsociacionController {
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
              ->where("tbl_asociacion.ID","=",$id)
-             ->get();
+             ->first();
         return $this->customResponse->is200Response($response,$AsociacionEntry);
     }
 
@@ -166,33 +167,23 @@ class AsociacionController {
     {
     
         $AsociacionEmpleadoEntry = asociacionEmpleadoEntry::select(
-            "tbl_asociacion_empleados.id_asociacion",
-            "tbl_asociacion_empleados.id_municipio",
-            "tbl_asociacion_empleados.id_barrio_vereda",
-            "tbl_asociacion_empleados.id_tipo_documento",
-            "tbl_asociacion_empleados.documentos",
-            "tbl_asociacion_empleados.nombres",
-            "tbl_asociacion_empleados.apellidos",
-            "tbl_asociacion_empleados.direccion",
-            "tbl_asociacion_empleados.telefono",
-            "tbl_asociacion_empleados.correo",
-            "tbl_asociacion_empleados.estado",
+            "tbl_asociacion_empleados.*",
             "tbl_asociacion.Nombre AS asociacion",
             "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
          )->leftjoin(
+                "tbl_asociacion", 
+                "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
+         ->leftjoin(
                 "tbl_municipio", 
-                "tbl_asociacion_empleados.Id_municipio","=","tbl_municipio.ID")
+                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
           ->leftjoin(
                 "tbl_veredas_barrios", 
                 "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
           ->leftjoin(
                 "tbl_tipo_documento", 
                 "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
-          ->leftjoin(
-                "tbl_asociacion", 
-                "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
           ->get();
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
@@ -201,26 +192,24 @@ class AsociacionController {
     {
 
         $AsociacionEmpleadoEntry = asociacionEmpleadoEntry::select(
-            "tbl_asociacion_empleados.id_asociacion",
-            "tbl_asociacion_empleados.id_barrio_vereda",
-            "tbl_asociacion_empleados.id_tipo_documento",
-            "tbl_asociacion_empleados.documentos",
-            "tbl_asociacion_empleados.nombres",
-            "tbl_asociacion_empleados.apellidos",
-            "tbl_asociacion_empleados.direccion",
-            "tbl_asociacion_empleados.telefono",
-            "tbl_asociacion_empleados.correo",
-            "tbl_asociacion_empleados.estado",
+            "tbl_asociacion_empleados.*",
+            "tbl_asociacion.Nombre AS asociacion",
+            "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
          )->leftjoin(
+                "tbl_asociacion", 
+                "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
+         ->leftjoin(
+                "tbl_municipio", 
+                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
+          ->leftjoin(
                 "tbl_veredas_barrios", 
                 "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
           ->leftjoin(
                 "tbl_tipo_documento", 
                 "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
-            ->where("tbl_asociacion_empleados.ID","=",$id)
-            ->get();
+          ->where("tbl_asociacion_empleados.ID","=",$id)->get();
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
 
@@ -264,13 +253,43 @@ class AsociacionController {
             $asociacionEmpleadoEntry->apellidos           =   $data['Apellidos'];
             $asociacionEmpleadoEntry->direccion           =   $data['Direccion'];
             $asociacionEmpleadoEntry->telefono            =   $data['Telefono'];
+            $asociacionEmpleadoEntry->correo              =   $data['Correo'];
             $asociacionEmpleadoEntry->estado              =   $data['Estado'];
             $asociacionEmpleadoEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
             $asociacionEmpleadoEntry->save();
 
-            $responseMessage = array('msg' 
-                            => "El empleado de la asociacion se guardo correctamente",'id' 
-                            => $asociacionEmpleadoEntry->id);
+            $userEntry = new UserEntry;
+            $userEntry->ID_EMP      =   $asociacionEmpleadoEntry->id;
+            $userEntry->USERNAME    =   $data['Correo'];
+            $userEntry->PASSWORD    =   $this->hashPassword($data['Documentos']);
+            $userEntry->ESTADO      =   $data['Estado'];
+            $userEntry->ID_ROLL     =   2;
+            $userEntry->save();
+
+            $data = asociacionEmpleadoEntry::select(
+            "tbl_asociacion_empleados.*",
+            "tbl_asociacion.Nombre AS asociacion",
+            "tbl_municipio.Nombre AS municipio",
+            "tbl_tipo_documento.Nombre as Tipo_documento",
+            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+         )->leftjoin(
+                "tbl_asociacion", 
+                "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
+         ->leftjoin(
+                "tbl_municipio", 
+                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
+          ->leftjoin(
+                "tbl_veredas_barrios", 
+                "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+          ->leftjoin(
+                "tbl_tipo_documento", 
+                "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
+          ->where("tbl_asociacion_empleados.ID","=",$asociacionEmpleadoEntry->id)->first();
+
+            $responseMessage = array(
+                            'msg'  => "El empleado de la asociacion se guardo correctamente",
+                            'datos' =>  $data,
+                            'id' => $asociacionEmpleadoEntry->id);
 
         return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
@@ -325,5 +344,10 @@ class AsociacionController {
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);
        }
+    }
+
+    public function hashPassword($password)
+    {
+        return password_hash($password,PASSWORD_DEFAULT);
     }
 }

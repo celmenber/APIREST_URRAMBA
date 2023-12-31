@@ -3,7 +3,6 @@ use DI\Container;
 use DI\Bridge\Slim\Bridge as SlimAppFactory;
 use Selective\BasePath\BasePathMiddleware;
 
-
 require_once __DIR__  .'/../vendor/autoload.php';
 
 $container = new Container();
@@ -17,13 +16,11 @@ $app = SlimAppFactory::create($container);
 // This path is used in urlFor().
 $app->add(new BasePathMiddleware($app));
 
-$middleware = require_once __DIR__ . '/middleware.php';
-$middleware($app);
+$middleware = require_once __DIR__ . '/middleware.php'; $middleware($app);
 
 // Add Slim routing middleware
-$app->addBodyParsingMiddleware();
+//$app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
-$app->add(new Tuupola\Middleware\CorsMiddleware);
 $app->addErrorMiddleware(true, true, true);
 
 $routes = require_once  __DIR__ .'/routes.php'; $routes($app);

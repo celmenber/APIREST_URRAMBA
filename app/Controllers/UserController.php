@@ -118,9 +118,10 @@ class UserController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-           "rol"=>v::notEmpty(),
-           "users"=>v::notEmpty(),
-           "password"=>v::notEmpty()
+           "Roll"=>v::notEmpty(),
+           "Usuario"=>v::notEmpty(),
+           "Estado"=>v::notEmpty(),
+           "Password"=>v::notEmpty()
          ]); 
 
         if($this->validator->failed())
@@ -130,10 +131,10 @@ class UserController
        } 
         try{
         $guestEntry = new UserEntry;
-        $guestEntry->ID_ROLL     =   $data['rol'];
-        $guestEntry->USERNAME    =   $data['users'];
-        $guestEntry->ESTADO      =   1;
-        $guestEntry->PASSWORD    =   $this->hashPassword($data['password']);
+        $guestEntry->ID_ROLL     =   $data['Roll'];
+        $guestEntry->USERNAME    =   $data['Usuario'];
+        $guestEntry->ESTADO      =   $data['Estado'];
+        $guestEntry->PASSWORD    =   $this->hashPassword($data['Password']);
         $guestEntry->save();
         $responseMessage = array('msg' => "usuario Guardado correctamente",'id' => $guestEntry->id);
         return $this->customResponse->is200Response($response,$responseMessage);
@@ -147,9 +148,9 @@ class UserController
     {
          $data = json_decode($request->getBody(),true);
          $this->validator->validate($request,[
-           "rol"=>v::notEmpty(),
-           "users"=>v::notEmpty(),
-           "estado"=>v::notEmpty()
+           "Roll"=>v::notEmpty(),
+           "Usuario"=>v::notEmpty(),
+           "Estado"=>v::notEmpty()
          ]);
          
         if($this->validator->failed())
@@ -159,10 +160,9 @@ class UserController
         }
         try{
                 $guestEntry = UserEntry::find($id);
-                $guestEntry->ID_ROLL     =   $data['rol'];
-                $guestEntry->USERNAME    =   $data['users'];
-                $guestEntry->ESTADO      =   1;
-                $guestEntry->PASSWORD    =   $this->hashPassword($data['password']);
+                $guestEntry->ID_ROLL     =   $data['Roll'];
+                $guestEntry->USERNAME    =   $data['Usuario'];
+                $guestEntry->ESTADO      =   $data['Usuario'];
                 $guestEntry->save();
                 $responseMessage = array('msg' => "usuario Editado correctamente",'id' => $id);
                 return $this->customResponse->is200Response($response,$responseMessage);
