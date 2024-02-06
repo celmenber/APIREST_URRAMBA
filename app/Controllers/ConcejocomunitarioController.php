@@ -11,6 +11,7 @@ use Respect\Validation\Validator as v;
 
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Symfony\Component\Console\Helper\Dumper;
 
 class ConcejocomunitarioController
 {
@@ -38,12 +39,7 @@ class ConcejocomunitarioController
     public function viewConcejocomunitario(Response $response)
     {
         $ConcejocomunitarioEntry = concejocomunitarioEntry::select(
-            "tbl_conncejos_comunitarios.id_autoridad_tradicional",
-            "tbl_conncejos_comunitarios.id_municipio",
-            "tbl_conncejos_comunitarios.id_asociacion",
-            "tbl_conncejos_comunitarios.Nit",
-            "tbl_conncejos_comunitarios.Nombre_concejo_comunitario",
-            "tbl_conncejos_comunitarios.Direccion",
+            "tbl_conncejos_comunitarios.*",
             "tbl_municipio.Nombre as Municipio",
             "tbl_asociacion.Nombre",
             "tbl_autoridad_tradicional.documentos",
@@ -56,7 +52,7 @@ class ConcejocomunitarioController
                 "tbl_autoridad_tradicional", 
                 "tbl_conncejos_comunitarios.id_autoridad_tradicional","=","tbl_autoridad_tradicional.ID")
           ->join(
-                "tbl_municipio", 
+                "tbl_asociacion", 
                 "tbl_conncejos_comunitarios.id_asociacion","=","tbl_asociacion.ID")
             ->get();
         return $this->customResponse->is200Response($response,$ConcejocomunitarioEntry);
@@ -105,7 +101,6 @@ class ConcejocomunitarioController
             "Id_municipio"=>v::notEmpty(),
             "Nit"=>v::notEmpty(),
             "Nombre_concejo_comunitario"=>v::notEmpty(),
-            "Direccion"=>v::notEmpty(),
          ]); 
 
         if($this->validator->failed())
@@ -120,7 +115,6 @@ class ConcejocomunitarioController
             $concejocomunitarioEntry->id_municipio               =   $data['Id_municipio']; 
             $concejocomunitarioEntry->Nit                        =   $data['Nit'];
             $concejocomunitarioEntry->Nombre_concejo_comunitario =   $data['Nombre_concejo_comunitario'];
-            $concejocomunitarioEntry->Direccion                  =   $data['Direccion'];
 
             $concejocomunitarioEntry->save();
             $responseMessage = array('msg' 
@@ -176,21 +170,7 @@ class ConcejocomunitarioController
     public function viewAutoridaTradicional(Response $response)
     {
         $AutoridadtradicionalEntry = autoridadtradicionalEntry::select(
-            "tbl_autoridad_tradicional.id_municipio",
-            "tbl_autoridad_tradicional.id_barrio_vereda",
-            "tbl_autoridad_tradicional.id_corregimiento",
-            "tbl_autoridad_tradicional.id_tipo_documento",
-            "tbl_autoridad_tradicional.documentos",
-            "tbl_autoridad_tradicional.nombres",
-            "tbl_autoridad_tradicional.apellidos",
-            "tbl_autoridad_tradicional.sexo",
-            "tbl_autoridad_tradicional.genero",
-            "tbl_autoridad_tradicional.orientacion_sexual",
-            "tbl_autoridad_tradicional.direccion",
-            "tbl_autoridad_tradicional.telefono",
-            "tbl_autoridad_tradicional.estado",
-            "tbl_autoridad_tradicional.fecha_nacimiento",
-            "tbl_autoridad_tradicional.fecha_ingreso",
+            "tbl_autoridad_tradicional.*",
             "tbl_municipio.Nombre as Municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
@@ -213,21 +193,7 @@ class ConcejocomunitarioController
      public function viewAutoridaTradicionalId(Response $response,$Id)
     {
         $AutoridadtradicionalEntry = autoridadtradicionalEntry::select(
-            "tbl_autoridad_tradicional.id_municipio",
-            "tbl_autoridad_tradicional.id_barrio_vereda",
-            "tbl_autoridad_tradicional.id_corregimiento",
-            "tbl_autoridad_tradicional.id_tipo_documento",
-            "tbl_autoridad_tradicional.documentos",
-            "tbl_autoridad_tradicional.nombres",
-            "tbl_autoridad_tradicional.apellidos",
-            "tbl_autoridad_tradicional.sexo",
-            "tbl_autoridad_tradicional.genero",
-            "tbl_autoridad_tradicional.orientacion_sexual",
-            "tbl_autoridad_tradicional.direccion",
-            "tbl_autoridad_tradicional.telefono",
-            "tbl_autoridad_tradicional.estado",
-            "tbl_autoridad_tradicional.fecha_nacimiento",
-            "tbl_autoridad_tradicional.fecha_ingreso",
+            "tbl_autoridad_tradicional.*",
             "tbl_municipio.Nombre as Municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
@@ -255,9 +221,12 @@ class ConcejocomunitarioController
         return $this->customResponse->is200Response($response,$responseMessage);
     }
 
-    public function createAutoridaTradicinal(Request $request,Response $response)
+    public function createAutoridaTradicional(Request $request,Response $response)
     {
        $data = json_decode($request->getBody(),true);
+   
+     //  var_dump($data);
+       
        $this->validator->validate($request,[
             "Id_municipio" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
@@ -267,8 +236,6 @@ class ConcejocomunitarioController
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
-            "Genero" =>v::notEmpty(),
-            "Orientacion_sexual" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Estado" =>v::notEmpty(),
@@ -292,8 +259,6 @@ class ConcejocomunitarioController
             $autoridadtradicionalEntry->nombres             =   $data['Nombres'];
             $autoridadtradicionalEntry->apellidos           =   $data['Apellidos'];
             $autoridadtradicionalEntry->sexo                =   $data['Sexo'];
-            $autoridadtradicionalEntry->genero              =   $data['Genero'];
-            $autoridadtradicionalEntry->orientacion_sexual  =   $data['Orientacion_sexual'];
             $autoridadtradicionalEntry->direccion           =   $data['Direccion'];
             $autoridadtradicionalEntry->telefono            =   $data['Telefono'];
             $autoridadtradicionalEntry->estado              =   $data['Estado'];
@@ -324,13 +289,11 @@ class ConcejocomunitarioController
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
-            "Genero" =>v::notEmpty(),
-            "Orientacion_sexual" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Estado" =>v::notEmpty(),
             "Fecha_nacimiento" =>v::notEmpty(),
-            "Fecha_ingreso" =>v::notEmpty(),
+            "Fecha_ingreso" =>v::Empty(),
          ]); 
 
      if($this->validator->failed())
@@ -349,8 +312,6 @@ class ConcejocomunitarioController
             $autoridadtradicionalEntry->nombres             =   $data['Nombres'];
             $autoridadtradicionalEntry->apellidos           =   $data['Apellidos'];
             $autoridadtradicionalEntry->sexo                =   $data['Sexo'];
-            $autoridadtradicionalEntry->genero              =   $data['Genero'];
-            $autoridadtradicionalEntry->orientacion_sexual  =   $data['Orientacion_sexual'];
             $autoridadtradicionalEntry->direccion           =   $data['Direccion'];
             $autoridadtradicionalEntry->telefono            =   $data['Telefono'];
             $autoridadtradicionalEntry->estado              =   $data['Estado'];
@@ -616,12 +577,5 @@ public function deleteMiembrosConcejo(Response $response,$Id)
         return $this->customResponse->is400Response($response,$responseMessage);
        }
     }
-
-
-
-
-
-
-
 
 }

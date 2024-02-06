@@ -31,8 +31,8 @@ return function (App $app)
 
 
 
-$app->add(new Tuupola\Middleware\CorsMiddleware([
-    "origin" => ["*","http://localhost:3000"],
+$app->add(new CorsMiddleware([
+    "origin" => ["*"],
     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
     "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
     "headers.expose" => ["Etag"],
@@ -49,24 +49,13 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
 
     $response = $handler->handle($request);
 
-    $response = $response->withHeader('Access-Control-Allow-Origin','*','http://localhost:3000');
+    $response = $response->withHeader('Access-Control-Allow-Origin','*');
     $response = $response->withHeader('Access-Control-Allow-Methods', implode(',', $methods));
     $response = $response->withHeader('Access-Control-Allow-Headers', $requestHeaders);
     $response = $response->withHeader('Access-Control-Allow-Credentials', 'true');
 
     return $response;
 });
- 
-/*  $app->add(function ($request, $handler) {
-            $resp = $handler->handle($request);
-            return $resp
-                    ->withHeader('Access-Control-Allow-Origin', '*','http://localhost:3000')
-                    ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Access-Control-Request-Method, Accept, Origin, Authorization')
-                    ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-                    ->withHeader('Allow', 'GET, POST, PUT, DELETE,OPTIONS')
-                    ->withHeader('Access-Control-Max-Age', '3600')
-                    ->withHeader('Content-type', 'application/json, charset=utf-8');
-        }); */
 
   $app->addRoutingMiddleware();
   $app->addErrorMiddleware(true,true,true);
