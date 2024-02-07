@@ -29,16 +29,18 @@ return function (App $app)
       ])
   );
 
-
+$app->addBodyParsingMiddleware();
 
 $app->add(new CorsMiddleware([
-    "origin" => ["*"],
+    //"origin" => ["http://localhost:3000"],
+    "origin.server" => "*",
     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
     "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
     "headers.expose" => ["Etag"],
     "credentials" => true,
     "cache" => 86400
 ]));
+
 
 // This middleware will append the response header Access-Control-Allow-Methods with all allowed methods
 $app->add(function (Request $request, RequestHandlerInterface $handler): Response {

@@ -9,9 +9,9 @@ use App\Controllers\ParametricasController;
 
 return function (App $app)
 {
+
    $app->group("/api",function($app)
      {
-
         $app->group("/auth",function($app)
         {
             $app->post("/login",[AuthController::class,"Login"]);
@@ -23,21 +23,8 @@ return function (App $app)
          $app->get("/view-user/{id}",[UserController::class,'viewUserId']);
          $app->post("/create-user",[UserController::class,'createUsers']);
          $app->put("/edit-user/{id}",[UserController::class,'editUsers']);
-
          $app->get("/view-user-roll",[UserController::class,'viewUserRoll']);
          $app->get("/view-user-roll/{id}",[UserController::class,'viewUserRollid']);
-
-/*          $app->get("/view-user-permiso",[UserController::class,'viewUserPermiso']);
-         $app->get("/view-user-permiso/{id}",[UserController::class,'viewUserPermisoid']);
-         $app->post("/create-user-permiso",[UserController::class,'createuserPermiso']);
-         $app->put("/edit-user-permiso/{id}",[UserController::class,'editUserPermiso']);
-
-         $app->get("/view-user-acceso",[UserController::class,'viewUserAcceso']);
-         $app->get("/view-user-acceso/{id}",[UserController::class,'viewUserAccesoid']);
-         $app->post("/create-user-acceso",[UserController::class,'createuserAcceso']);
-           
-         $app->post("/create-user-gt",[UserController::class,'createuserGt']);
-         $app->put("/edit-user-gt/{id}",[UserController::class,'editUserGt']); */
        });
 
        $app->group("/asociacion",function($app)
@@ -97,8 +84,6 @@ return function (App $app)
          $app->delete("/delete-vivienda/{id}", [ViviendaController::class, "deleteVivienda"]);
       });
 
-
-
        $app->group("/parametros",function($app)
       {
          $app->get("/view-departamento",[ParametricasController::class, 'viewDepartamento']);
@@ -123,20 +108,5 @@ return function (App $app)
          $app->patch("/estado-tipodocumento/{id}",[ParametricasController::class,'estadoTipodocumento']);
          $app->get("/view-logo",[ParametricasController::class, 'viewLogo']);
       });
-
-
-    /*   $app->group("/clientecandidato",function($app)
-      {
-         $app->get("/view-candidato",[ClienteCandidatoController::class, 'viewCliCandidatoGet']);
-         $app->get("/view-candidato/{id}",[ClienteCandidatoController::class,'viewCliCandidatoGetid']);
-         $app->get("/view-candidatonombre/{nombre}",[ClienteCandidatoController::class,'viewCliCandidatoGetnombre']);
-         $app->get("/view-candidatocodigo/{codigo}",[ClienteCandidatoController::class,'viewCliCandidatoGetcodigo']);
-         $app->post("/create-candidato",[ClienteCandidatoController::class,'createCliCandidatoEntry']);
-         $app->put("/edit-candidato/{id}",[ClienteCandidatoController::class,'editaCliCandidatoEntry']);
-         $app->patch("/estado-candidato/{id}",[ClienteCandidatoController::class,'estadoCliCandidato']);
-         $app->delete("/delete-candidato/{id}", [ClienteCandidatoController::class, "deleteCliCandidato"]);
-      });
- */
-
    });
 };
