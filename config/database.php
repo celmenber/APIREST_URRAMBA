@@ -1,4 +1,7 @@
 <?php
+// Permitir el encabezado Authorization
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Authorization, Content-Type");
 $database_config = [
     'driver'=>'mysql',
     'host'=>'127.0.0.1',

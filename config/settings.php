@@ -1,4 +1,7 @@
 <?php
+// Permitir el encabezado Authorization
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Authorization, Content-Type");
 use Psr\Container\ContainerInterface;
 
 return function (ContainerInterface $container)

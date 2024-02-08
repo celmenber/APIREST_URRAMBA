@@ -1,4 +1,7 @@
 <?php
+// Permitir el encabezado Authorization
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Authorization, Content-Type");
 use DI\Container;
 use DI\Bridge\Slim\Bridge as SlimAppFactory;
 use Selective\BasePath\BasePathMiddleware;

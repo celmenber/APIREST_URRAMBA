@@ -1,4 +1,11 @@
 <?php
+
+// Permitir el encabezado Authorization
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Authorization, Content-Type");
+
+// Resto de la lógica del servidor...
+
 use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -8,6 +15,7 @@ use Tuupola\Middleware\CorsMiddleware;
 
 return function (App $app)
 {
+    
   $app->getContainer()->get('settings');
   $app->add(
       new \Tuupola\Middleware\JwtAuthentication([
@@ -32,7 +40,6 @@ return function (App $app)
 $app->addBodyParsingMiddleware();
 
 $app->add(new CorsMiddleware([
-    //"origin" => ["http://localhost:3000"],
     "origin.server" => "*",
     "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
     "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
