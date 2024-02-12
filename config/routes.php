@@ -4,6 +4,7 @@ use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Controllers\AsociacionController;
 use App\Controllers\ConcejocomunitarioController;
+use App\Controllers\GrupoFamiliarController;
 use App\Controllers\ViviendaController;
 use App\Controllers\ParametricasController;
 
@@ -72,6 +73,25 @@ return function (App $app)
          $app->put("/edit-miembrosconcejo/{id}",[ConcejocomunitarioController::class,'editMiembrosConcejo']);
          $app->patch("/estado-miembrosconcejo/{id}",[ConcejocomunitarioController::class,'estadoMiembrosConcejo']);
          $app->delete("/delete-miembrosconcejo/{id}", [ConcejocomunitarioController::class, "deleteMiembrosConcejo"]);
+      });
+
+      $app->group("/jefehogar",function($app)
+      {
+         $app->get("/view-jefehogar",[GrupoFamiliarController::class, 'viewJefeHogar']);
+         $app->get("/view-jefehogar/{id}",[GrupoFamiliarController::class,'viewJefeHogarId']);
+         $app->post("/create-jefehogar",[GrupoFamiliarController::class,'createJefeHogar']);
+         $app->put("/edit-jefehogar/{id}",[GrupoFamiliarController::class,'editarJefeHogar']);
+         $app->patch("/estado-jefehogar/{id}",[GrupoFamiliarController::class,'estadoJefeHogar']);
+         $app->delete("/delete-jefehogar/{id}", [GrupoFamiliarController::class, "deleteJefeHogar"]);
+      });
+
+       $app->group("/nucleofamiiar",function($app)
+      {
+         $app->get("/view-nucleofamiiar",[GrupoFamiliarController::class, 'viewNucleoFamiliar']);
+         $app->get("/view-nucleofamiiar/{id}",[GrupoFamiliarController::class,'viewNucleoFamiliarId']);
+         $app->post("/create-nucleofamiiar",[GrupoFamiliarController::class,'createNucleoFamiliar']);
+         $app->put("/edit-nucleofamiiar/{id}",[GrupoFamiliarController::class,'editarNucleoFamiliar']);
+         $app->delete("/delete-nucleofamiiar/{id}", [GrupoFamiliarController::class, "deleteNucleoFamiliar"]);
       });
 
       $app->group("/vivienda",function($app)

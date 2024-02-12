@@ -35,6 +35,71 @@ class ConcejocomunitarioController
         $this->validator = new Validator();
 
     }
+/* DESDE AQUI SE PROCESO DE CONSULTAS EJECUCION METODOS */
+public function consultaConcejocomunitario($Id)
+{
+     $data = concejocomunitarioEntry::select(
+            "tbl_conncejos_comunitarios.*",
+            "tbl_municipio.Nombre as Municipio",
+            "tbl_asociacion.Nombre",
+            "tbl_autoridad_tradicional.documentos",
+            "tbl_autoridad_tradicional.nombres",
+            "tbl_autoridad_tradicional.apellidos",
+         )->join(
+                "tbl_municipio", 
+                "tbl_conncejos_comunitarios.Id_municipio","=","tbl_municipio.ID")
+          ->join(
+                "tbl_autoridad_tradicional", 
+                "tbl_conncejos_comunitarios.id_autoridad_tradicional","=","tbl_autoridad_tradicional.ID")
+          ->join(
+                "tbl_asociacion", 
+                "tbl_conncejos_comunitarios.id_asociacion","=","tbl_asociacion.ID")
+         ->where("ID","=",$Id)->first();
+    return $data;
+}
+public function consultaMiembrosConcejo($Id)
+{
+  $data = concejosmiembrosEntry::select(
+             "tbl_concejos_miembros.*",
+             "tbl_tipo_documento.Nombre as Tipo_documento",
+             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+             "tbl_corregimiento.Nombre as Corregimiento",
+         )->join(
+                "tbl_veredas_barrios", 
+                "tbl_concejos_miembros.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+          ->join(
+                "tbl_corregimiento", 
+                "tbl_concejos_miembros.id_corregimiento","=","tbl_corregimiento.ID")
+          ->join(
+                "tbl_tipo_documento", 
+                "tbl_concejos_miembros.id_tipo_documento","=","tbl_tipo_documento.ID")
+          ->where("ID","=",$Id)->first();
+    return $data;
+}
+ public function consultaAutoridaTradicional($Id)
+    {
+     $data = autoridadtradicionalEntry::select(
+            "tbl_autoridad_tradicional.*",
+            "tbl_municipio.Nombre as Municipio",
+            "tbl_tipo_documento.Nombre as Tipo_documento",
+            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+            "tbl_corregimiento.Nombre as Corregimiento",
+         )->join(
+                "tbl_municipio", 
+                "tbl_autoridad_tradicional.Id_municipio","=","tbl_municipio.ID")
+          ->join(
+                "tbl_veredas_barrios", 
+                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+          ->join(
+                "tbl_corregimiento", 
+                "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
+         ->join(
+                "tbl_tipo_documento", 
+                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
+         ->where("ID","=",$Id)->first();
+      return $data;
+}
+
  /* DESDE AQUI SE PROCESO EL CRUED DE LA TABLA CONCEJO COMUNITARIO */
     public function viewConcejocomunitario(Response $response)
     {
@@ -59,29 +124,7 @@ class ConcejocomunitarioController
     }
    public function viewConcejocomunitarioId(Response $response,$Id)
     {
-        $ConcejocomunitarioEntry = concejocomunitarioEntry::select(
-            "tbl_conncejos_comunitarios.id_autoridad_tradicional",
-            "tbl_conncejos_comunitarios.id_municipio",
-            "tbl_conncejos_comunitarios.id_asociacion",
-            "tbl_conncejos_comunitarios.Nit",
-            "tbl_conncejos_comunitarios.Nombre_concejo_comunitario",
-            "tbl_conncejos_comunitarios.Direccion",
-            "tbl_municipio.Nombre as Municipio",
-            "tbl_asociacion.Nombre",
-            "tbl_autoridad_tradicional.documentos",
-            "tbl_autoridad_tradicional.nombres",
-            "tbl_autoridad_tradicional.apellidos",
-         )->join(
-                "tbl_municipio", 
-                "tbl_conncejos_comunitarios.Id_municipio","=","tbl_municipio.ID")
-          ->join(
-                "tbl_autoridad_tradicional", 
-                "tbl_conncejos_comunitarios.id_autoridad_tradicional","=","tbl_autoridad_tradicional.ID")
-          ->join(
-                "tbl_asociacion", 
-                "tbl_conncejos_comunitarios.id_asociacion","=","tbl_asociacion.ID")
-         ->where("ID","=",$Id)
-         ->get();
+        $ConcejocomunitarioEntry = $this->consultaConcejocomunitario($Id);
         return $this->customResponse->is200Response($response,$ConcejocomunitarioEntry);
     }
 
@@ -115,11 +158,11 @@ class ConcejocomunitarioController
             $concejocomunitarioEntry->id_municipio               =   $data['Id_municipio']; 
             $concejocomunitarioEntry->Nit                        =   $data['Nit'];
             $concejocomunitarioEntry->Nombre_concejo_comunitario =   $data['Nombre_concejo_comunitario'];
-
             $concejocomunitarioEntry->save();
-            $responseMessage = array('msg' 
-                            => "Asociacion Guardada correctamente",'id' 
-                            => $concejocomunitarioEntry->id);
+
+            $responseMessage = array('msg' => "Asociacion Guardada correctamente",
+                                     'datos' =>  $this->consultaConcejocomunitario($concejocomunitarioEntry->id),
+                                     'id' => $concejocomunitarioEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -154,9 +197,9 @@ class ConcejocomunitarioController
             $concejocomunitarioEntry->Direccion                  =   $data['Direccion'];
 
             $concejocomunitarioEntry->save();
-            $responseMessage = array('msg' 
-                            => "Asociacion Guardada correctamente",'id' 
-                            => $concejocomunitarioEntry->id);
+            $responseMessage = array('msg' => "Asociacion Guardada correctamente",
+                                     'datos' =>  $this->consultaConcejocomunitario($Id),  
+                                     'id' => $concejocomunitarioEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -190,42 +233,22 @@ class ConcejocomunitarioController
         return $this->customResponse->is200Response($response,$AutoridadtradicionalEntry);
     }
 
-     public function viewAutoridaTradicionalId(Response $response,$Id)
-    {
-        $AutoridadtradicionalEntry = autoridadtradicionalEntry::select(
-            "tbl_autoridad_tradicional.*",
-            "tbl_municipio.Nombre as Municipio",
-            "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento",
-         )->join(
-                "tbl_municipio", 
-                "tbl_autoridad_tradicional.Id_municipio","=","tbl_municipio.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
-                "tbl_corregimiento", 
-                "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
-         ->join(
-                "tbl_tipo_documento", 
-                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
-         ->where("ID","=",$Id)->get();
+public function viewAutoridaTradicionalId(Response $response,$Id)
+{
+        $AutoridadtradicionalEntry = $this->consultaAutoridaTradicional($Id);
         return $this->customResponse->is200Response($response,$AutoridadtradicionalEntry);
-    }
+}
 
-    public function deleteAutoridaTradicional(Response $response,$Id)
-    {
+public function deleteAutoridaTradicional(Response $response,$Id)
+{
         $this->autoridadtradicionalEntry->where(["ID"=>$Id])->delete();
         $responseMessage = "La Autorida Tradicinal fue eliminada successfully";
         return $this->customResponse->is200Response($response,$responseMessage);
-    }
+}
 
     public function createAutoridaTradicional(Request $request,Response $response)
     {
        $data = json_decode($request->getBody(),true);
-   
-     //  var_dump($data);
        
        $this->validator->validate($request,[
             "Id_municipio" =>v::notEmpty(),
@@ -266,9 +289,9 @@ class ConcejocomunitarioController
             $autoridadtradicionalEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
             $autoridadtradicionalEntry->save();
 
-            $responseMessage = array('msg' 
-                            => "La autoridad tradicional Guardada correctamente",'id' 
-                            => $autoridadtradicionalEntry->id);
+            $responseMessage = array('msg'  => "La autoridad tradicional Guardada correctamente",
+                                    'datos' => $this->consultaAutoridaTradicional($autoridadtradicionalEntry->id),
+                                    'id'=> $autoridadtradicionalEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -277,8 +300,8 @@ class ConcejocomunitarioController
        }
     }
 
-    public function editAutoridaTradicional(Request $request,Response $response,$Id)
-    {
+public function editAutoridaTradicional(Request $request,Response $response,$Id)
+ {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_municipio" =>v::notEmpty(),
@@ -319,18 +342,18 @@ class ConcejocomunitarioController
             $autoridadtradicionalEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
             $autoridadtradicionalEntry->save();
 
-            $responseMessage = array('msg' 
-                            => "La autoridad tradicional Guardada correctamente",'id' 
-                            => $autoridadtradicionalEntry->id);
+            $responseMessage = array('msg' => "La autoridad tradicional Guardada correctamente",
+                                     'datos' => $this->consultaAutoridaTradicional($Id),
+                                     'id' => $autoridadtradicionalEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);
        }
-    }
+}
 
-        public function estadoAutoridaTradiciona(Request $request,Response $response,$Id)
+public function estadoAutoridaTradiciona(Request $request,Response $response,$Id)
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
@@ -364,67 +387,25 @@ class ConcejocomunitarioController
     public function viewMiembrosConcejo(Response $response)
     {
         $ConcejosmiembrosEntry = concejosmiembrosEntry::select(
-            "tbl_autoridad_tradicional.id_conncejo_comunitario",
-            "tbl_autoridad_tradicional.id_barrio_vereda",
-            "tbl_autoridad_tradicional.id_corregimiento",
-            "tbl_autoridad_tradicional.id_tipo_documento",
-            "tbl_autoridad_tradicional.documentos",
-            "tbl_autoridad_tradicional.nombres",
-            "tbl_autoridad_tradicional.apellidos",
-            "tbl_autoridad_tradicional.sexo",
-            "tbl_autoridad_tradicional.genero",
-            "tbl_autoridad_tradicional.orientacion_sexual",
-            "tbl_autoridad_tradicional.direccion",
-            "tbl_autoridad_tradicional.telefono",
-            "tbl_autoridad_tradicional.estado",
-            "tbl_autoridad_tradicional.fecha_nacimiento",
-            "tbl_autoridad_tradicional.fecha_ingreso",
+            "tbl_concejos_miembros.fecha_ingreso",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
             "tbl_corregimiento.Nombre as Corregimiento",
          )->join(
                 "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+                "tbl_concejos_miembros.id_barrio_vereda","=","tbl_veredas_barrios.ID")
           ->join(
                 "tbl_corregimiento", 
-                "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
+                "tbl_concejos_miembros.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
                 "tbl_tipo_documento", 
-                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")->get();
+                "tbl_concejos_miembros.id_tipo_documento","=","tbl_tipo_documento.ID")->get();
         return $this->customResponse->is200Response($response,$ConcejosmiembrosEntry);
     }
      
 public function viewMiembrosConcejoId(Response $response,$Id)
     {
-        $ConcejosmiembrosEntry = concejosmiembrosEntry::select(
-            "tbl_autoridad_tradicional.id_conncejo_comunitario",
-            "tbl_autoridad_tradicional.id_barrio_vereda",
-            "tbl_autoridad_tradicional.id_corregimiento",
-            "tbl_autoridad_tradicional.id_tipo_documento",
-            "tbl_autoridad_tradicional.documentos",
-            "tbl_autoridad_tradicional.nombres",
-            "tbl_autoridad_tradicional.apellidos",
-            "tbl_autoridad_tradicional.sexo",
-            "tbl_autoridad_tradicional.genero",
-            "tbl_autoridad_tradicional.orientacion_sexual",
-            "tbl_autoridad_tradicional.direccion",
-            "tbl_autoridad_tradicional.telefono",
-            "tbl_autoridad_tradicional.estado",
-            "tbl_autoridad_tradicional.fecha_nacimiento",
-            "tbl_autoridad_tradicional.fecha_ingreso",
-            "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento",
-         )->join(
-                "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
-                "tbl_corregimiento", 
-                "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
-          ->join(
-                "tbl_tipo_documento", 
-                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")
-          ->where("ID","=",$Id)->get();
+        $ConcejosmiembrosEntry = $this->consultaMiembrosConcejo($Id);
         return $this->customResponse->is200Response($response,$ConcejosmiembrosEntry);
     }
 public function deleteMiembrosConcejo(Response $response,$Id)
@@ -464,25 +445,26 @@ public function deleteMiembrosConcejo(Response $response,$Id)
         try{
             $concejosmiembrosEntry = new ConcejosmiembrosEntry;
             $concejosmiembrosEntry->id_conncejo_comunitario =   $data['Id_conncejo_comunitario'];
-            $concejosmiembrosEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
-            $concejosmiembrosEntry->id_corregimiento    =   $data['Id_corregimiento'];
-            $concejosmiembrosEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
-            $concejosmiembrosEntry->documentos          =   $data['Documentos'];
-            $concejosmiembrosEntry->nombres             =   $data['Nombres'];
-            $concejosmiembrosEntry->apellidos           =   $data['Apellidos'];
-            $concejosmiembrosEntry->sexo                =   $data['Sexo'];
-            $concejosmiembrosEntry->genero              =   $data['Genero'];
-            $concejosmiembrosEntry->orientacion_sexual  =   $data['Orientacion_sexual'];
-            $concejosmiembrosEntry->direccion           =   $data['Direccion'];
-            $concejosmiembrosEntry->telefono            =   $data['Telefono'];
-            $concejosmiembrosEntry->estado              =   $data['Estado'];
-            $concejosmiembrosEntry->fecha_nacimiento    =   $data['Fecha_nacimiento'];
-            $concejosmiembrosEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
+            $concejosmiembrosEntry->id_barrio_vereda        =   $data['Id_barrio_vereda'];
+            $concejosmiembrosEntry->id_corregimiento        =   $data['Id_corregimiento'];
+            $concejosmiembrosEntry->id_tipo_documento       =   $data['Id_tipo_documento'];
+            $concejosmiembrosEntry->documentos              =   $data['Documentos'];
+            $concejosmiembrosEntry->nombres                 =   $data['Nombres'];
+            $concejosmiembrosEntry->apellidos               =   $data['Apellidos'];
+            $concejosmiembrosEntry->sexo                    =   $data['Sexo'];
+            $concejosmiembrosEntry->genero                  =   $data['Genero'];
+            $concejosmiembrosEntry->orientacion_sexual      =   $data['Orientacion_sexual'];
+            $concejosmiembrosEntry->direccion               =   $data['Direccion'];
+            $concejosmiembrosEntry->telefono                =   $data['Telefono'];
+            $concejosmiembrosEntry->estado                  =   $data['Estado'];
+            $concejosmiembrosEntry->fecha_nacimiento        =   $data['Fecha_nacimiento'];
+            $concejosmiembrosEntry->fecha_ingreso           =   $data['Fecha_ingreso'];
             $concejosmiembrosEntry->save();
 
-            $responseMessage = array('msg' 
-                            => "La autoridad tradicional Guardada correctamente",'id' 
-                            => $concejosmiembrosEntry->id);
+            $responseMessage = array(
+                            'msg'  => "La autoridad tradicional Guardada correctamente",
+                            'datos' => $this->consultaMiembrosConcejo($concejosmiembrosEntry->id),
+                            'id' => $concejosmiembrosEntry->id);
 
         return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
@@ -520,26 +502,26 @@ public function deleteMiembrosConcejo(Response $response,$Id)
 
         try{
             $concejosmiembrosEntry = ConcejosmiembrosEntry::find($Id);
-            $concejosmiembrosEntry->id_conncejo_comunitario =   $data['Id_conncejo_comunitario'];
-            $concejosmiembrosEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
-            $concejosmiembrosEntry->id_corregimiento    =   $data['Id_corregimiento'];
-            $concejosmiembrosEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
-            $concejosmiembrosEntry->documentos          =   $data['Documentos'];
-            $concejosmiembrosEntry->nombres             =   $data['Nombres'];
-            $concejosmiembrosEntry->apellidos           =   $data['Apellidos'];
-            $concejosmiembrosEntry->sexo                =   $data['Sexo'];
-            $concejosmiembrosEntry->genero              =   $data['Genero'];
-            $concejosmiembrosEntry->orientacion_sexual  =   $data['Orientacion_sexual'];
-            $concejosmiembrosEntry->direccion           =   $data['Direccion'];
-            $concejosmiembrosEntry->telefono            =   $data['Telefono'];
-            $concejosmiembrosEntry->estado              =   $data['Estado'];
-            $concejosmiembrosEntry->fecha_nacimiento    =   $data['Fecha_nacimiento'];
-            $concejosmiembrosEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
+            $concejosmiembrosEntry->id_conncejo_comunitario  =  $data['Id_conncejo_comunitario'];
+            $concejosmiembrosEntry->id_barrio_vereda         =   $data['Id_barrio_vereda'];
+            $concejosmiembrosEntry->id_corregimiento         =   $data['Id_corregimiento'];
+            $concejosmiembrosEntry->id_tipo_documento        =   $data['Id_tipo_documento'];
+            $concejosmiembrosEntry->documentos               =   $data['Documentos'];
+            $concejosmiembrosEntry->nombres                  =   $data['Nombres'];
+            $concejosmiembrosEntry->apellidos                =   $data['Apellidos'];
+            $concejosmiembrosEntry->sexo                     =   $data['Sexo'];
+            $concejosmiembrosEntry->genero                   =   $data['Genero'];
+            $concejosmiembrosEntry->orientacion_sexual       =   $data['Orientacion_sexual'];
+            $concejosmiembrosEntry->direccion                =   $data['Direccion'];
+            $concejosmiembrosEntry->telefono                 =   $data['Telefono'];
+            $concejosmiembrosEntry->estado                   =   $data['Estado'];
+            $concejosmiembrosEntry->fecha_nacimiento         =   $data['Fecha_nacimiento'];
+            $concejosmiembrosEntry->fecha_ingreso            =   $data['Fecha_ingreso'];
             $concejosmiembrosEntry->save();
 
-            $responseMessage = array('msg' 
-                            => "La autoridad tradicional Guardada correctamente",'id' 
-                            => $concejosmiembrosEntry->id);
+            $responseMessage = array('msg' => "La autoridad tradicional Guardada correctamente",
+                                     'datos' => $this->consultaMiembrosConcejo($Id),
+                                    'id' => $concejosmiembrosEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
