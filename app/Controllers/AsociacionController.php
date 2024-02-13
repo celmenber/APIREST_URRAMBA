@@ -37,10 +37,32 @@ public function hashPassword($password)
     return password_hash($password,PASSWORD_DEFAULT);
 }   
 
+
+public function verifyAccountNit($Nit)
+{
+        $count = $this->asociacionEntry->where(["Nit"=>$Nit])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+public function verifyAccountDoc($Document)
+{
+        $count = $this->asociacionEmpleadoEntry->where(["documentos"=>$Document])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+
  public function consultaAsociacion($id)
  {
         $data = asociacionEntry::select(
-            "tbl_asociacion.ID",
+           "tbl_asociacion.ID",
            "tbl_asociacion.Nit",
            "tbl_asociacion.Nombre",
            "tbl_asociacion.Direccion",
@@ -121,6 +143,13 @@ public function consultaAsociacionEmpleado($id){
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+
+       $count = $this->verifyAccountNit($data['Nit']);
+        if($count==true){
+             $responseMessage = "101-Invalido Asociacion";
+            return $this->customResponse->is101Response($response,$responseMessage);
+        }
+        
         try{
         $asociacionEntry = new AsociacionEntry;
         $asociacionEntry->id_municipio  =   $data['Id_municipio'];
@@ -130,20 +159,6 @@ public function consultaAsociacionEmpleado($id){
         $asociacionEntry->telefono      =   $data['Telefono'];
         $asociacionEntry->correo        =   $data['Correo'];
         $asociacionEntry->save();
-
-        $data = asociacionEntry::select(
-           "tbl_asociacion.Nit",
-           "tbl_asociacion.Nombre",
-           "tbl_asociacion.Direccion",
-           "tbl_asociacion.Telefono",
-           "tbl_asociacion.Correo",
-           "tbl_asociacion.Id_municipio",
-           "tbl_municipio.Nombre AS municipio"
-         )->join(
-                "tbl_municipio", 
-                "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-             ->where("tbl_asociacion.ID","=",$asociacionEntry->id)->first();
-
 
         $responseMessage = array(
                         'msg'  => "Asociacion Guardada correctamente",
@@ -174,6 +189,11 @@ public function consultaAsociacionEmpleado($id){
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+        $count = $this->verifyAccountNit($data['Nit']);
+        if($count==true){
+             $responseMessage = "101-Invalido Asociacion";
+            return $this->customResponse->is101Response($response,$responseMessage);
+        }
         try{
         $asociacionEntry = AsociacionEntry::find($id);
         $asociacionEntry->id_municipio  =   $data['Id_municipio'];
@@ -185,7 +205,7 @@ public function consultaAsociacionEmpleado($id){
         $asociacionEntry->save();
         
         $responseMessage = array('msg' => "La asociacion editada correctamente",
-                               'datos' => $this->consultaAsociacion($id),
+                                  'datos' => $this->consultaAsociacion($id),
                                   'id' => $asociacionEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
@@ -257,6 +277,12 @@ public function consultaAsociacionEmpleado($id){
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
+        $count = $this->verifyAccountDoc($data['Documentos']);
+        if($count==true){
+             $responseMessage = "101-Invalido Asociacion Empleado";
+            return $this->customResponse->is101Response($response,$responseMessage);
+        }
+
         try{
             $asociacionEmpleadoEntry = new AsociacionEmpleadoEntry;
             $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
@@ -285,11 +311,11 @@ public function consultaAsociacionEmpleado($id){
                             'datos' =>  $this->consultaAsociacionEmpleado($asociacionEmpleadoEntry->id),
                             'id' => $asociacionEmpleadoEntry->id);
 
-        return $this->customResponse->is201Response($response,$responseMessage);
-        }catch(Exception $err){
-        $responseMessage = array("err" => $err->getMessage());
-        return $this->customResponse->is400Response($response,$responseMessage);
-       }
+            return $this->customResponse->is201Response($response,$responseMessage);
+            }catch(Exception $err){
+            $responseMessage = array("err" => $err->getMessage());
+            return $this->customResponse->is400Response($response,$responseMessage);
+        }
     }
 
     public function editarAsociacionEmpleado(Request $request,Response $response,$id)
@@ -314,6 +340,11 @@ public function consultaAsociacionEmpleado($id){
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+    $count = $this->verifyAccountDoc($data['Documentos']);
+        if($count==true){
+             $responseMessage = "101-Invalido Asociacion Empleado";
+            return $this->customResponse->is101Response($response,$responseMessage);
+        }
 
         try{
             $asociacionEmpleadoEntry = AsociacionEmpleadoEntry::find($id);

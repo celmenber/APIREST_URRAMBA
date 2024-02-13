@@ -36,6 +36,28 @@ class ConcejocomunitarioController
 
     }
 /* DESDE AQUI SE PROCESO DE CONSULTAS EJECUCION METODOS */
+public function verifyAccountDocMiembro($Document)
+{
+        $count = $this->concejosmiembrosEntry->where(["documentos"=>$Document])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+
+public function verifyAccountDocAutorida($Document)
+{
+        $count = $this->autoridadtradicionalEntry->where(["documentos"=>$Document])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+
 public function consultaConcejocomunitario($Id)
 {
      $data = concejocomunitarioEntry::select(
@@ -54,7 +76,7 @@ public function consultaConcejocomunitario($Id)
           ->join(
                 "tbl_asociacion", 
                 "tbl_conncejos_comunitarios.id_asociacion","=","tbl_asociacion.ID")
-         ->where("ID","=",$Id)->first();
+         ->where("tbl_conncejos_comunitarios.ID","=",$Id)->first();
     return $data;
 }
 public function consultaMiembrosConcejo($Id)
@@ -71,9 +93,9 @@ public function consultaMiembrosConcejo($Id)
                 "tbl_corregimiento", 
                 "tbl_concejos_miembros.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
-                "tbl_tipo_documento", 
-                "tbl_concejos_miembros.id_tipo_documento","=","tbl_tipo_documento.ID")
-          ->where("ID","=",$Id)->first();
+                 "tbl_tipo_documento", 
+                 "tbl_concejos_miembros.id_tipo_documento","=","tbl_tipo_documento.ID")
+          ->where("tbl_concejos_miembros.ID","=",$Id)->first();
     return $data;
 }
  public function consultaAutoridaTradicional($Id)
@@ -96,7 +118,7 @@ public function consultaMiembrosConcejo($Id)
          ->join(
                 "tbl_tipo_documento", 
                 "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
-         ->where("ID","=",$Id)->first();
+         ->where("tbl_autoridad_tradicional.ID","=",$Id)->first();
       return $data;
 }
 
@@ -272,6 +294,12 @@ public function deleteAutoridaTradicional(Response $response,$Id)
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
+        $count = $this->verifyAccountDocAutorida($data['Documentos']);
+        if($count==true){
+              $responseMessage = "101-Invalido Autoridad tradicional";
+            return $this->customResponse->is101Response($response,$responseMessage);
+        } 
+
         try{
             $autoridadtradicionalEntry = new AutoridadtradicionalEntry;
             $autoridadtradicionalEntry->id_municipio        =   $data['Id_municipio'];
@@ -324,7 +352,13 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
-       
+
+        $count = $this->verifyAccountDocAutorida($data['Documentos']);
+        if($count==true){
+              $responseMessage = "101-Invalido Autoridad tradicional";
+            return $this->customResponse->is101Response($response,$responseMessage);
+        } 
+
         try{
             $autoridadtradicionalEntry = AutoridadtradicionalEntry::find($Id);
             $autoridadtradicionalEntry->id_municipio        =   $data['Id_municipio'];
@@ -441,6 +475,12 @@ public function deleteMiembrosConcejo(Response $response,$Id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+    $count = $this->verifyAccountDocMiembro($data['Documentos']);
+    if($count==true)
+       {
+              $responseMessage = "101-Invalido Miembros Concejo";
+            return $this->customResponse->is101Response($response,$responseMessage);
+       }
 
         try{
             $concejosmiembrosEntry = new ConcejosmiembrosEntry;
@@ -499,7 +539,13 @@ public function deleteMiembrosConcejo(Response $response,$Id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
-
+ $count = $this->verifyAccountDocMiembro($data['Documentos']);
+    if($count==true)
+       {
+              $responseMessage = "101-Invalido Miembros Concejo";
+            return $this->customResponse->is101Response($response,$responseMessage);
+       }
+       
         try{
             $concejosmiembrosEntry = ConcejosmiembrosEntry::find($Id);
             $concejosmiembrosEntry->id_conncejo_comunitario  =  $data['Id_conncejo_comunitario'];

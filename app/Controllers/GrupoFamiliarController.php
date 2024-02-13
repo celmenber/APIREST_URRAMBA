@@ -141,7 +141,7 @@ return $data;
 
     public function viewJefeHogarId(Response $response,$Id)
     {
-        $JefeHogarEntry = $this-> consultaJefeHogar($Id);
+        $JefeHogarEntry = $this->consultaJefeHogar($Id);
         return $this->customResponse->is200Response($response,$JefeHogarEntry);
     }
 
@@ -183,7 +183,7 @@ public function deleteJefeHogar(Response $response,$Id)
 
         try{
         $jefeHogarEntry = new JefeHogarEntry;
-       	$jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
+        $jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
         $jefeHogarEntry->id_municipio            = $data['Id_municipio'];
         $jefeHogarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
         $jefeHogarEntry->id_corregimiento        = $data['Id_corregimiento'];
@@ -245,8 +245,9 @@ public function editarJefeHogar(Request $request,Response $response,$id)
        } 
 
         try{
+            
         $jefeHogarEntry = JefeHogarEntry::find($id);
-       	$jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
+        $jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
         $jefeHogarEntry->id_municipio            = $data['Id_municipio'];
         $jefeHogarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
         $jefeHogarEntry->id_corregimiento        = $data['Id_corregimiento'];

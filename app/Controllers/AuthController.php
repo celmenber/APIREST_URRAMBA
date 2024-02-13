@@ -105,7 +105,7 @@ class AuthController
           ->leftJoin(
                 "tbl_autoridad_tradicional",
                 "tbl_user_login.ID_AUT","=","tbl_autoridad_tradicional.ID")
-            ->where("USERNAME","=",$users)
+            ->where("tbl_user_login.USERNAME","=",$users)
             ->first();
         return $guestEntries;
     }
@@ -121,8 +121,8 @@ class AuthController
         return true;
     }
 
-    public function verifyAccountPass($password,$users)
-    {
+public function verifyAccountPass($password,$users)
+{
          $hashedPassword ="";
 
           $user = $this->user->where(["USERNAME"=>$users])->get();
@@ -133,7 +133,7 @@ class AuthController
         }  
 
        // $hashedPassword = $user->PASSWORD;
-         $verify = password_verify($password,$hashedPassword);
+       $verify = password_verify($password,$hashedPassword);
         if($verify==false)
         {
             return false;

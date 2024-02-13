@@ -353,7 +353,8 @@ class UserController
         $gtuserentry->ID_USER         =   $data['IDUSER'];
         $gtuserentry->ID_TIPO_USER    =   $data['IDTIPOUSER'];
         $gtuserentry->save();
-        $responseMessage = array('msg' => "gt USUARIO editado correctamente",'id' => $id);
+        $responseMessage = array('msg' => "USUARIO editado correctamente",
+                                  'id' => $id);
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
