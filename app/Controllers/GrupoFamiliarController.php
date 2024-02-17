@@ -28,6 +28,17 @@ class GrupoFamiliarController {
     $this->nucleoFamiliarEntry = new NucleoFamiliarEntry();
     $this->validator = new Validator();
     }
+
+public function verifyAccountDocjefeHogar($Document)
+{
+        $count = $this->jefeHogarEntry->where(["documentos"=>$Document])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
      /* DESDE AQUI SE PROCESAN CONSULTAS JEFE DE HOGAR */
 public function consultaJefeHogar($Id)
 {
@@ -38,7 +49,7 @@ public function consultaJefeHogar($Id)
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
             "tbl_corregimiento.Nombre as Corregimiento",
-            "tbl_escolaridad.Nombre as Escolaridad",
+            "tbl_escolaridad.Nombre as Escolaridad"
          )->join(
                 "tbl_conncejos_comunitarios", 
                 "tbl_jefe_hogar.id_concejo_comunitario","=","tbl_conncejos_comunitarios.ID")
@@ -139,11 +150,11 @@ return $data;
         return $this->customResponse->is200Response($response,$JefeHogarEntry); 
 }
 
-    public function viewJefeHogarId(Response $response,$Id)
-    {
+public function viewJefeHogarId(Response $response,$Id)
+ {
         $JefeHogarEntry = $this->consultaJefeHogar($Id);
         return $this->customResponse->is200Response($response,$JefeHogarEntry);
-    }
+}
 
 public function deleteJefeHogar(Response $response,$Id)
 {
@@ -151,8 +162,8 @@ public function deleteJefeHogar(Response $response,$Id)
         $responseMessage = "El jefe DE hogar fue eliminado successfully";  
         return $this->customResponse->is200Response($response,$responseMessage);
 }
-     public function createJefeHogar(Request $request,Response $response)
-    {
+public function createJefeHogar(Request $request,Response $response)
+{
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_concejo_comunitario" =>v::notEmpty(),
@@ -170,7 +181,7 @@ public function deleteJefeHogar(Response $response,$Id)
             "Genero" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
             "Fecha_nacimiento" =>v::notEmpty(),
             "Fecha_ingreso" =>v::notEmpty(),
          ]); 
@@ -180,6 +191,12 @@ public function deleteJefeHogar(Response $response,$Id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+
+        $count = $this->verifyAccountDocjefeHogar($data['Documentos']);
+        if($count==true){
+              $responseMessage = "203-Información no autorizada Jefe Hogar";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        } 
 
         try{
         $jefeHogarEntry = new JefeHogarEntry;
@@ -233,7 +250,7 @@ public function editarJefeHogar(Request $request,Response $response,$id)
             "Genero" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
             "Fecha_nacimiento" =>v::notEmpty(),
             "Fecha_ingreso" =>v::notEmpty(),
          ]); 
@@ -243,6 +260,12 @@ public function editarJefeHogar(Request $request,Response $response,$id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+
+        $count = $this->verifyAccountDocjefeHogar($data['Documentos']);
+        if($count==true){
+              $responseMessage = "203-Información no autorizada Jefe Hogar";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        } 
 
         try{
             

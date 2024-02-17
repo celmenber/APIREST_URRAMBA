@@ -48,14 +48,14 @@ class CustomResponse
         return $response->withHeader("Content-Type","application/json")
                         ->withStatus(422);
     } 
-  public function is101Response($response,$responseMessage)
+  public function is203Response($response,$responseMessage)
     {
         $responseMessage = json_encode([
-            "code"=>101,
+            "code"=>203,
             "success"=>false,
             "response"=>$responseMessage]);
         $response->getBody()->write($responseMessage);
         return $response->withHeader("Content-Type","application/json")
-            ->withStatus(101);
+            ->withStatus(203);
     }
 }

@@ -59,7 +59,7 @@ public function verifyAccountDoc($Document)
 return true;
 }
 
- public function consultaAsociacion($id)
+ public function consultaAsociacion($Id)
  {
         $data = asociacionEntry::select(
            "tbl_asociacion.ID",
@@ -73,16 +73,16 @@ return true;
          )->join(
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-          ->where("tbl_asociacion.ID","=",$id)->first();
+          ->where("tbl_asociacion.ID","=",$Id)->first();
          return $data;
  }
-public function consultaAsociacionEmpleado($id){
+public function consultaAsociacionEmpleado($Id){
     $data = asociacionEmpleadoEntry::select(
                     "tbl_asociacion_empleados.*",
                     "tbl_asociacion.Nombre AS asociacion",
                     "tbl_municipio.Nombre AS municipio",
                     "tbl_tipo_documento.Nombre as Tipo_documento",
-                    "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+                    "tbl_veredas_barrios.Nombre as Veredas_Barrios"
                 )->leftjoin(
                         "tbl_asociacion", 
                         "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
@@ -95,7 +95,7 @@ public function consultaAsociacionEmpleado($id){
                 ->leftjoin(
                         "tbl_tipo_documento", 
                         "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
-                ->where("tbl_asociacion_empleados.ID","=",$id)->first();
+                ->where("tbl_asociacion_empleados.ID","=",$Id)->first();
         return $data;
     }
 
@@ -113,15 +113,15 @@ public function consultaAsociacionEmpleado($id){
         return $this->customResponse->is200Response($response,$AsociacionEntry);
     }
 
-    public function viewAsociacionid(Response $response,$id)
+    public function viewAsociacionid(Response $response,$Id)
     {
-        $AsociacionEntry = $this->consultaAsociacion($id);
+        $AsociacionEntry = $this->consultaAsociacion($Id);
         return $this->customResponse->is200Response($response,$AsociacionEntry);
     }
 
-    public function deleteAsociacion(Response $response,$id)
+    public function deleteAsociacion(Response $response,$Id)
     {
-        $this->asociacionEntry->where(["ID"=>$id])->delete();
+        $this->asociacionEntry->where(["ID"=>$Id])->delete();
         $responseMessage = "La Asociacion fue eliminada successfully";
         return $this->customResponse->is200Response($response,$responseMessage);
     }
@@ -146,8 +146,8 @@ public function consultaAsociacionEmpleado($id){
 
        $count = $this->verifyAccountNit($data['Nit']);
         if($count==true){
-             $responseMessage = "101-Invalido Asociacion";
-            return $this->customResponse->is101Response($response,$responseMessage);
+             $responseMessage = "203-Información no autorizada Asociacion";
+            return $this->customResponse->is203Response($response,$responseMessage);
         }
         
         try{
@@ -172,7 +172,7 @@ public function consultaAsociacionEmpleado($id){
        }
    }
 
-       public function editAsociacion(Request $request,Response $response,$id)
+       public function editAsociacion(Request $request,Response $response,$Id)
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
@@ -192,10 +192,10 @@ public function consultaAsociacionEmpleado($id){
         $count = $this->verifyAccountNit($data['Nit']);
         if($count==true){
              $responseMessage = "101-Invalido Asociacion";
-            return $this->customResponse->is101Response($response,$responseMessage);
+            return $this->customResponse->is203Response($response,$responseMessage);
         }
         try{
-        $asociacionEntry = AsociacionEntry::find($id);
+        $asociacionEntry = AsociacionEntry::find($Id);
         $asociacionEntry->id_municipio  =   $data['Id_municipio'];
         $asociacionEntry->Nit           =   $data['Nit'];
         $asociacionEntry->Nombre        =   $data['Nombre'];
@@ -205,7 +205,7 @@ public function consultaAsociacionEmpleado($id){
         $asociacionEntry->save();
         
         $responseMessage = array('msg' => "La asociacion editada correctamente",
-                                  'datos' => $this->consultaAsociacion($id),
+                                  'datos' => $this->consultaAsociacion($Id),
                                   'id' => $asociacionEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
@@ -224,7 +224,7 @@ public function consultaAsociacionEmpleado($id){
             "tbl_asociacion.Nombre AS asociacion",
             "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+            "tbl_veredas_barrios.Nombre as Veredas_Barrios"
          )->leftjoin(
                 "tbl_asociacion", 
                 "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
@@ -240,16 +240,16 @@ public function consultaAsociacionEmpleado($id){
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
 
-    public function viewAsociacionEmpleadoid(Response $response,$id)
+    public function viewAsociacionEmpleadoid(Response $response,$Id)
     {
 
-        $AsociacionEmpleadoEntry = $this->consultaAsociacionEmpleado($id);
+        $AsociacionEmpleadoEntry = $this->consultaAsociacionEmpleado($Id);
         return $this->customResponse->is200Response($response,$AsociacionEmpleadoEntry);
     }
 
-    public function deleteAsociacionEmpleado(Response $response,$id)
+    public function deleteAsociacionEmpleado(Response $response,$Id)
     {
-        $this->asociacionEmpleadoEntry->where(["ID"=>$id])->delete();
+        $this->asociacionEmpleadoEntry->where(["ID"=>$Id])->delete();
         $responseMessage = "El Empleado Asociacion fue eliminada successfully";
         return $this->customResponse->is200Response($response,$responseMessage);
     }
@@ -267,7 +267,7 @@ public function consultaAsociacionEmpleado($id){
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
             "Fecha_ingreso" =>v::notEmpty(),
          ]); 
 
@@ -279,8 +279,8 @@ public function consultaAsociacionEmpleado($id){
 
         $count = $this->verifyAccountDoc($data['Documentos']);
         if($count==true){
-             $responseMessage = "101-Invalido Asociacion Empleado";
-            return $this->customResponse->is101Response($response,$responseMessage);
+             $responseMessage = "203-Información no autorizada  Asociacion Empleado";
+            return $this->customResponse->is203Response($response,$responseMessage);
         }
 
         try{
@@ -318,7 +318,7 @@ public function consultaAsociacionEmpleado($id){
         }
     }
 
-    public function editarAsociacionEmpleado(Request $request,Response $response,$id)
+    public function editarAsociacionEmpleado(Request $request,Response $response,$Id)
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
@@ -331,7 +331,7 @@ public function consultaAsociacionEmpleado($id){
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
             "Fecha_ingreso" =>v::notEmpty(),
          ]); 
 
@@ -342,12 +342,12 @@ public function consultaAsociacionEmpleado($id){
        } 
     $count = $this->verifyAccountDoc($data['Documentos']);
         if($count==true){
-             $responseMessage = "101-Invalido Asociacion Empleado";
-            return $this->customResponse->is101Response($response,$responseMessage);
+             $responseMessage = "203-Información no autorizada Asociacion Empleado";
+            return $this->customResponse->is203Response($response,$responseMessage);
         }
 
         try{
-            $asociacionEmpleadoEntry = AsociacionEmpleadoEntry::find($id);
+            $asociacionEmpleadoEntry = AsociacionEmpleadoEntry::find($Id);
             $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
             $asociacionEmpleadoEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
             $asociacionEmpleadoEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
@@ -362,7 +362,7 @@ public function consultaAsociacionEmpleado($id){
 
             $responseMessage = array(
                             'msg'  => "El empleado de la asociacion se edito correctamente",
-                            'datos' => $this->consultaAsociacionEmpleado($id),
+                            'datos' => $this->consultaAsociacionEmpleado($Id),
                             'id' => $asociacionEmpleadoEntry->id);
 
         return $this->customResponse->is200Response($response,$responseMessage);

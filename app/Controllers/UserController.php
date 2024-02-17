@@ -64,7 +64,7 @@ class UserController
             "tbl_autoridad_tradicional.documentos AS aut_documentos",
             "tbl_autoridad_tradicional.nombres AS aut_nombres",
             "tbl_autoridad_tradicional.apellidos AS aut_apellidos",
-            "tbl_autoridad_tradicional.telefono AS aut_telefono",
+            "tbl_autoridad_tradicional.telefono AS aut_telefono"
             )
             ->join(
                 "tbl_user_roll",
@@ -79,7 +79,7 @@ class UserController
         return $this->customResponse->is200Response($response,$guestEntries); 
     }
 
-    public function viewUserId(Response $response,$id)
+    public function viewUserId(Response $response,$Id)
     {
        $guestEntries = userEntry::select(
                        "ID_USER",
@@ -87,15 +87,14 @@ class UserController
                        "USERNAME",
                        "ESTADO",
                        "AVATAR",
-                       "FECHA")
-                    ->where("ID_USER","=",$id)
-                    ->get();
+                       "FECHA"
+                       )->where("ID_USER","=",$Id)->first();
         return $this->customResponse->is200Response($response,$guestEntries);
     }
 
-    public function deleteUser(Response $response,$id)
+    public function deleteUser(Response $response,$Id)
     {
-        $this->userEntry->where(["ID_USER"=>$id])->delete();
+        $this->userEntry->where(["ID_USER"=>$Id])->delete();
         $responseMessage = "El usuario fue eliminado exitosamente";
         return $this->customResponse->is200Response($response,$responseMessage);
     }
@@ -107,9 +106,9 @@ class UserController
         return $this->customResponse->is200Response($response,$guestEntriesroll);
     }
 
-      public function viewUserRollid(Response $response,$id)
+      public function viewUserRollid(Response $response,$Id)
     {
-        $guestEntriesroll = $this->userEntryroll->where(["ID"=>$id])->get();
+        $guestEntriesroll = $this->userEntryroll->where(["ID"=>$Id])->first();
         return $this->customResponse->is200Response($response,$guestEntriesroll);
     }
 
@@ -136,7 +135,8 @@ class UserController
         $guestEntry->ESTADO      =   $data['Estado'];
         $guestEntry->PASSWORD    =   $this->hashPassword($data['Password']);
         $guestEntry->save();
-        $responseMessage = array('msg' => "usuario Guardado correctamente",'id' => $guestEntry->id);
+        $responseMessage = array('msg' => "usuario Guardado correctamente",
+                                  'id' => $guestEntry->id);
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
@@ -144,7 +144,7 @@ class UserController
        }
    }
 
-    public function editUsers(Request $request,Response $response,$id)
+    public function editUsers(Request $request,Response $response,$Id)
     {
          $data = json_decode($request->getBody(),true);
          $this->validator->validate($request,[
@@ -159,12 +159,13 @@ class UserController
             return $this->customResponse->is400Response($response,$responseMessage);
         }
         try{
-                $guestEntry = UserEntry::find($id);
+                $guestEntry = UserEntry::find($Id);
                 $guestEntry->ID_ROLL     =   $data['Roll'];
                 $guestEntry->USERNAME    =   $data['Usuario'];
                 $guestEntry->ESTADO      =   $data['Usuario'];
                 $guestEntry->save();
-                $responseMessage = array('msg' => "usuario Editado correctamente",'id' => $id);
+                $responseMessage = array('msg' => "usuario Editado correctamente",
+                                           'id'=> $Id);
                 return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
                 $responseMessage = array("err" => $err->getMessage());
@@ -179,9 +180,9 @@ class UserController
         return $this->customResponse->is200Response($response,$guestEntriespermiso);
     }
 
-      public function viewUserPermisoid(Response $response,$id)
+      public function viewUserPermisoid(Response $response,$Id)
     {
-        $guestEntriespermiso = $this->userEntrypermiso->where(["ID"=>$id])->get();
+        $guestEntriespermiso = $this->userEntrypermiso->where(["ID"=>$Id])->get();
         return $this->customResponse->is200Response($response,$guestEntriespermiso);
     }
 
@@ -216,7 +217,7 @@ class UserController
        }
     }
 
-   public function editUserPermiso(Request $request,Response $response,$id)
+   public function editUserPermiso(Request $request,Response $response,$Id)
     {
         $data = json_decode($request->getBody(),true);
          $this->validator->validate($request,[
@@ -231,12 +232,13 @@ class UserController
         }
 
      try{
-        $guestEntrypermiso = UserEntrypermiso::find($id);
+        $guestEntrypermiso = UserEntrypermiso::find($Id);
         $guestEntrypermiso->ID_USER_MENU         =   $data['IDUSERMENU'];
         $guestEntrypermiso->NOMBRE               =   $data['NOMBRE'];
         $guestEntrypermiso->ESTADO               =   $data['ESTADO'];
         $guestEntrypermiso->save();
-        $responseMessage = array('msg' => "permiso editado correctamente",'id' => $id);
+        $responseMessage = array('msg' => "permiso editado correctamente",
+                                  'id' => $Id);
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
@@ -252,9 +254,9 @@ class UserController
         return $this->customResponse->is200Response($response,$guestEntriesacceso);
     }
 
-    public function viewUserAccesoid(Response $response,$id)
+    public function viewUserAccesoid(Response $response,$Id)
     {
-        $guestEntriesacceso = $this->userEntryacceso->where(["ID"=>$id])->get();
+        $guestEntriesacceso = $this->userEntryacceso->where(["ID"=>$Id])->get();
         return $this->customResponse->is200Response($response,$guestEntriesacceso);
     }
 
@@ -301,9 +303,9 @@ class UserController
         return $this->customResponse->is200Response($response,$usergt_userentry);
     }
 
-    public function viewUserGtid(Response $response,$id)
+    public function viewUserGtid(Response $response,$Id)
     {
-        $guestgt_userentry = $this->usergtEntry->where(["ID"=>$id])->get();
+        $guestgt_userentry = $this->usergtEntry->where(["ID"=>$Id])->first();
         return $this->customResponse->is200Response($response,$guestgt_userentry);
     }
 
@@ -326,7 +328,8 @@ class UserController
         $gtuserentry->ID_USER         =   $data['IDUSER'];
         $gtuserentry->ID_TIPO_USER    =   $data['IDTIPOUSER'];
         $gtuserentry->save();
-        $responseMessage = array('msg' => "gt USUARIO guardado correctamente",'id' => $gtuserentry->id);
+        $responseMessage = array('msg' => "gt USUARIO guardado correctamente",
+                                  'id' => $gtuserentry->id);
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
@@ -334,7 +337,7 @@ class UserController
        }
     }
 
-    public function editUserGt(Request $request,Response $response,$id)
+    public function editUserGt(Request $request,Response $response,$Id)
     {
          $data = json_decode($request->getBody(),true);
          $this->validator->validate($request,[
@@ -349,12 +352,12 @@ class UserController
         }
 
         try{
-        $gtuserentry = GT_user::find($id);
+        $gtuserentry = GT_user::find($Id);
         $gtuserentry->ID_USER         =   $data['IDUSER'];
         $gtuserentry->ID_TIPO_USER    =   $data['IDTIPOUSER'];
         $gtuserentry->save();
         $responseMessage = array('msg' => "USUARIO editado correctamente",
-                                  'id' => $id);
+                                  'id'=>$Id);
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());

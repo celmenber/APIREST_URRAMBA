@@ -66,7 +66,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -104,7 +104,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -141,7 +141,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -178,7 +178,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -214,7 +214,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -250,7 +250,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -286,7 +286,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -324,7 +324,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -362,7 +362,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
@@ -401,7 +401,7 @@ class ParametricasController
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
-            "Estado" =>v::notEmpty(),
+            "Estado" =>v::notOptional(),
          ]); 
 
      if($this->validator->failed())
