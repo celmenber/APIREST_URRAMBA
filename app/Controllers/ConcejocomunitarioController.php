@@ -374,15 +374,14 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
         }  */
 
         try{
-          //  $autoridadtradicionalEntry = AutoridadtradicionalEntry::find($Id);
-            AutoridadtradicionalEntry::where('ID', '=', $Id)->update([
+         AutoridadtradicionalEntry::where('ID', '=', $Id)->update([
             'id_municipio'        =>   $data['Id_municipio'],
             'id_barrio_vereda'    =>   $data['Id_barrio_vereda'],
             'id_corregimiento'    =>   $data['Id_corregimiento'],
             'id_tipo_documento'   =>   $data['Id_tipo_documento'],
-            'id_escolaridad'      =>  $data['Id_escolaridad'],
-            'estado_escolaridad'  =>  $data['Estado_escolaridad'],
-            'documentos'          =>  $data['Documentos'],
+            'id_escolaridad'      =>   $data['Id_escolaridad'],
+            'estado_escolaridad'  =>   $data['Estado_escolaridad'],
+            'documentos'          =>   $data['Documentos'],
             'nombres'             =>   $data['Nombres'],
             'apellidos'           =>   $data['Apellidos'],
             'sexo'                =>   $data['Sexo'],

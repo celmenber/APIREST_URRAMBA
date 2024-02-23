@@ -189,24 +189,24 @@ public function consultaAsociacionEmpleado($Id){
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
-        $count = $this->verifyAccountNit($data['Nit']);
+       /*  $count = $this->verifyAccountNit($data['Nit']);
         if($count==true){
              $responseMessage = "101-Invalido Asociacion";
             return $this->customResponse->is203Response($response,$responseMessage);
-        }
+        } */
         try{
-        $asociacionEntry = AsociacionEntry::find($Id);
-        $asociacionEntry->id_municipio  =   $data['Id_municipio'];
-        $asociacionEntry->Nit           =   $data['Nit'];
-        $asociacionEntry->Nombre        =   $data['Nombre'];
-        $asociacionEntry->direccion     =   $data['Direccion'];
-        $asociacionEntry->telefono      =   $data['Telefono'];
-        $asociacionEntry->correo        =   $data['Correo'];
-        $asociacionEntry->save();
+         AsociacionEntry::where('ID', '=', $Id)->update([
+            'id_municipio'  =>   $data['Id_municipio'],
+            'Nit'           =>   $data['Nit'],
+            'Nombre'        =>   $data['Nombre'],
+            'direccion'     =>   $data['Direccion'],
+            'telefono'      =>   $data['Telefono'],
+            'correo'        =>   $data['Correo'],
+        ]);
         
         $responseMessage = array('msg' => "La asociacion editada correctamente",
                                   'datos' => $this->consultaAsociacion($Id),
-                                  'id' => $asociacionEntry->id);
+                                  'id' => $Id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -347,23 +347,23 @@ public function consultaAsociacionEmpleado($Id){
         }
 
         try{
-            $asociacionEmpleadoEntry = AsociacionEmpleadoEntry::find($Id);
-            $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
-            $asociacionEmpleadoEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
-            $asociacionEmpleadoEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
-            $asociacionEmpleadoEntry->documentos          =   $data['Documentos'];
-            $asociacionEmpleadoEntry->nombres             =   $data['Nombres'];
-            $asociacionEmpleadoEntry->apellidos           =   $data['Apellidos'];
-            $asociacionEmpleadoEntry->direccion           =   $data['Direccion'];
-            $asociacionEmpleadoEntry->telefono            =   $data['Telefono'];
-            $asociacionEmpleadoEntry->estado              =   $data['Estado'];
-            $asociacionEmpleadoEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
-            $asociacionEmpleadoEntry->save();
+           AsociacionEmpleadoEntry::where('ID', '=', $Id)->update([
+            'id_asociacion'         =>   $data['Id_asociacion'],
+            'id_barrio_vereda'      =>   $data['Id_barrio_vereda'],
+            'id_tipo_documento'     =>   $data['Id_tipo_documento'],
+            'documentos'            =>   $data['Documentos'],
+            'nombres'               =>   $data['Nombres'],
+            'apellidos'             =>   $data['Apellidos'],
+            'direccion'             =>   $data['Direccion'],
+            'telefono'              =>   $data['Telefono'],
+            'estado'                =>   $data['Estado'],
+            'fecha_ingreso'         =>   $data['Fecha_ingreso'],
+           ]);
 
             $responseMessage = array(
                             'msg'  => "El empleado de la asociacion se edito correctamente",
                             'datos' => $this->consultaAsociacionEmpleado($Id),
-                            'id' => $asociacionEmpleadoEntry->id);
+                            'id' => $Id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){

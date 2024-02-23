@@ -190,37 +190,37 @@ class CaracterizacionController {
        } 
         
         try{
-            $caracterizacionEntry = CaracterizacionEntry::find($Id);
-        	$caracterizacionEntry->id_usuario                                        = $data['id_usuario'];
-            $caracterizacionEntry->id_jefe_hogar                                     = $data['id_jefe_hogar'];
-            $caracterizacionEntry->regimen_salud                                     = $data['regimen_salud'];
-            $caracterizacionEntry->tiene_discapacidad                                = $data['tiene_discapacidad'];
-            $caracterizacionEntry->indique_sudiscapacidad                            = $data['indique_sudiscapacidad'];
-            $caracterizacionEntry->se_encuentra_vinculado_asalud                     = $data['se_encuentra_vinculado_asalud'];
-            $caracterizacionEntry->tipo_remuneracion                                 = $data['tipo_remuneracion'];
-            $caracterizacionEntry->ocupacion_uoficio                                 = $data['ocupacion_uoficio'];
-            $caracterizacionEntry->se_encuentra_afiliado_sistema_previsional         = $data['se_encuentra_afiliado_sistema_previsional'];
-            $caracterizacionEntry->usted_esvictima_conflicto                         = $data['usted_esvictima_conflicto'];
-            $caracterizacionEntry->ustedesta_inscrito_enRUV                          = $data['ustedesta_inscrito_enRUV'];
-            $caracterizacionEntry->tipo_vivienda                                     = $data['tipo_vivienda'];
-            $caracterizacionEntry->tenencia_vivienda                                 = $data['tenencia_vivienda'];
-            $caracterizacionEntry->material_construccion_predominante                = $data['material_construccion_predominante'];
-            $caracterizacionEntry->material_predominante_cubierta_techo              = $data['material_predominante_cubierta_techo'];
-            $caracterizacionEntry->material_predominante_piso                        = $data['material_predominante_piso'];
-            $caracterizacionEntry->elagua_proviene_de                                = $data['elagua_proviene_de'];
-            $caracterizacionEntry->servicio_higienico_vivienda_esta                  = $data['servicio_higienico_vivienda_esta'];
-            $caracterizacionEntry->laelectricidad_proviene_de                        = $data['laelectricidad_proviene_de'];
-            $caracterizacionEntry->medio_eliminacion_basura                          = $data['medio_eliminacion_basura'];
-            $caracterizacionEntry->metodo_utilizado_cocinar                          = $data['metodo_utilizado_cocinar'];
-            $caracterizacionEntry->usted_tiene_acceso_a                              = $data['usted_tiene_acceso_a'];
-            $caracterizacionEntry->cuenta_conestos_servicios_sector                  = $data['cuenta_conestos_servicios_sector'];
-            $caracterizacionEntry->alternativas_describe_mejor_condición_laboral_actual = $data['alternativas_describe_mejor_condición_laboral_actual'];
-            $caracterizacionEntry->save();
+        CaracterizacionEntry::where('ID', '=', $Id)->update([
+        	'id_usuario'                                => $data['id_usuario'],
+            'id_jefe_hogar'                             => $data['id_jefe_hogar'],
+            'regimen_salud'                             => $data['regimen_salud'],
+            'tiene_discapacidad'                        => $data['tiene_discapacidad'],
+            'indique_sudiscapacidad'                    => $data['indique_sudiscapacidad'],
+            'se_encuentra_vinculado_asalud'             => $data['se_encuentra_vinculado_asalud'],
+            'tipo_remuneracion'                         => $data['tipo_remuneracion'],
+            'ocupacion_uoficio'                         => $data['ocupacion_uoficio'],
+            'se_encuentra_afiliado_sistema_previsional' => $data['se_encuentra_afiliado_sistema_previsional'],
+            'usted_esvictima_conflicto'                 => $data['usted_esvictima_conflicto'],
+            'ustedesta_inscrito_enRUV'                  => $data['ustedesta_inscrito_enRUV'],
+            'tipo_vivienda'                             => $data['tipo_vivienda'],
+            'tenencia_vivienda'                         => $data['tenencia_vivienda'],
+            'material_construccion_predominante'        => $data['material_construccion_predominante'],
+            'material_predominante_cubierta_techo'      => $data['material_predominante_cubierta_techo'],
+            'material_predominante_piso'                => $data['material_predominante_piso'],
+            'elagua_proviene_de'                        => $data['elagua_proviene_de'],
+            'servicio_higienico_vivienda_esta'          => $data['servicio_higienico_vivienda_esta'],
+            'laelectricidad_proviene_de'                => $data['laelectricidad_proviene_de'],
+            'medio_eliminacion_basura'                  => $data['medio_eliminacion_basura'],
+            'metodo_utilizado_cocinar'                  => $data['metodo_utilizado_cocinar'],
+            'usted_tiene_acceso_a'                      => $data['usted_tiene_acceso_a'],
+            'cuenta_conestos_servicios_sector'          => $data['cuenta_conestos_servicios_sector'],
+            'alternativas_describe_mejor_condición_laboral_actual' => $data['alternativas_describe_mejor_condición_laboral_actual'],
+            ]);
 
         $responseMessage = array(
                         'msg'  => "Caracterizacion Guardada correctamente",
-                        'datos' => $this->consultaCaracterizacion($caracterizacionEntry->id),
-                        'id' => $caracterizacionEntry->id);
+                        'datos' => $this->consultaCaracterizacion($Id),
+                        'id' => $Id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){

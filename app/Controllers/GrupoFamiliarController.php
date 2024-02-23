@@ -231,7 +231,7 @@ public function createJefeHogar(Request $request,Response $response)
    }
 
 
-public function editarJefeHogar(Request $request,Response $response,$id)
+public function editarJefeHogar(Request $request,Response $response,$Id)
     {
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
@@ -269,29 +269,30 @@ public function editarJefeHogar(Request $request,Response $response,$id)
 
         try{
             
-        $jefeHogarEntry = JefeHogarEntry::find($id);
-        $jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
-        $jefeHogarEntry->id_municipio            = $data['Id_municipio'];
-        $jefeHogarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
-        $jefeHogarEntry->id_corregimiento        = $data['Id_corregimiento'];
-        $jefeHogarEntry->id_tipo_documento       = $data['Id_tipo_documento'];
-        $jefeHogarEntry->id_escolaridad          = $data['Id_escolaridad'];
-        $jefeHogarEntry->id_orientacion_sexual   = $data['Id_orientacion_sexual'];
-        $jefeHogarEntry->documentos              = $data['Documentos'];
-        $jefeHogarEntry->nombres                 = $data['Nombres'];
-        $jefeHogarEntry->apellidos               = $data['Apellidos'];
-        $jefeHogarEntry->estado_escolaridad      = $data['Estado_escolaridad'];
-        $jefeHogarEntry->sexo                    = $data['Sexo'];
-        $jefeHogarEntry->genero                  = $data['Genero'];
-        $jefeHogarEntry->direccion               = $data['Direccion'];
-        $jefeHogarEntry->telefono                = $data['Telefono'];
-        $jefeHogarEntry->estado                  = $data['Estado'];
-        $jefeHogarEntry->fecha_nacimiento        = $data['Fecha_nacimiento'];
-        $jefeHogarEntry->fecha_ingreso           = $data['Fecha_ingreso'];
+               JefeHogarEntry::where('ID', '=', $Id)->update([
+                  'id_concejo_comunitario'  => $data['Id_concejo_comunitario'],
+                  'id_municipio'            => $data['Id_municipio'],
+                  'id_barrio_vereda'        => $data['Id_barrio_vereda'],
+                  'id_corregimiento'        => $data['Id_corregimiento'],
+                  'id_tipo_documento'       => $data['Id_tipo_documento'],
+                  'id_escolaridad'          => $data['Id_escolaridad'],
+                  'id_orientacion_sexual'   => $data['Id_orientacion_sexual'],
+                  'documentos'              => $data['Documentos'],
+                  'nombres'                 => $data['Nombres'],
+                  'apellidos'               => $data['Apellidos'],
+                  'estado_escolaridad'      => $data['Estado_escolaridad'],
+                  'sexo'                    => $data['Sexo'],
+                  'genero'                  => $data['Genero'],
+                  'direccion'               => $data['Direccion'],
+                  'telefono'                => $data['Telefono'],
+                  'estado'                  => $data['Estado'],
+                  'fecha_nacimiento'        => $data['Fecha_nacimiento'],
+                  'fecha_ingreso'           => $data['Fecha_ingreso'],
+          ]);
 
-        $responseMessage = array('msg' => "Jefe de hogar Guardado correctamente",
-                                 'datos' =>  $this->consultaJefeHogar($id),
-                                 'id' => $jefeHogarEntry->id);
+        $responseMessage = array('msg' => "Jefe de hogar actualizado correctamente",
+                                 'datos' =>  $this->consultaJefeHogar($Id),
+                                 'id' => $Id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -403,7 +404,7 @@ public function createNucleoFamiliar(Request $request,Response $response)
 
         try{
         $nucleoFamiliarEntry = new NucleoFamiliarEntry;
-       	$nucleoFamiliarEntry->id_jefe_hogar           = $data['Id_jefe_hogar'];
+        $nucleoFamiliarEntry->id_jefe_hogar           = $data['Id_jefe_hogar'];
         $nucleoFamiliarEntry->id_parentesco           = $data['Id_parentesco'];
         $nucleoFamiliarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
         $nucleoFamiliarEntry->id_corregimiento        = $data['Id_corregimiento'];
@@ -456,26 +457,27 @@ public function createNucleoFamiliar(Request $request,Response $response)
        } 
 
         try{
-        $nucleoFamiliarEntry = NucleoFamiliarEntry::find($Id);
-       	$nucleoFamiliarEntry->id_jefe_hogar           = $data['Id_jefe_hogar'];
-        $nucleoFamiliarEntry->id_parentesco           = $data['Id_parentesco'];
-        $nucleoFamiliarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
-        $nucleoFamiliarEntry->id_corregimiento        = $data['Id_corregimiento'];
-        $nucleoFamiliarEntry->id_tipo_documento       = $data['Id_tipo_documento'];
-        $nucleoFamiliarEntry->id_escolaridad          = $data['Id_escolaridad'];
-        $nucleoFamiliarEntry->id_orientacion_sexual   = $data['Id_orientacion_sexual'];
-        $nucleoFamiliarEntry->documentos              = $data['Documentos'];
-        $nucleoFamiliarEntry->nombres                 = $data['Nombres'];
-        $nucleoFamiliarEntry->apellidos               = $data['Apellidos'];
-        $nucleoFamiliarEntry->estado_escolaridad      = $data['Estado_escolaridad'];
-        $nucleoFamiliarEntry->sexo                    = $data['Sexo'];
-        $nucleoFamiliarEntry->genero                  = $data['Genero'];
-        $nucleoFamiliarEntry->fecha_nacimiento        = $data['Fecha_nacimiento'];
-        $nucleoFamiliarEntry->fecha_ingreso           = $data['Fecha_ingreso'];
+  NucleoFamiliarEntry::where('ID', '=', $Id)->update([
+            'id_jefe_hogar'         => $data['Id_jefe_hogar'],
+            'id_parentesco'         => $data['Id_parentesco'],
+            'id_barrio_vereda'      => $data['Id_barrio_vereda'],
+            'id_corregimiento'      => $data['Id_corregimiento'],
+            'id_tipo_documento'     => $data['Id_tipo_documento'],
+            'id_escolaridad'        => $data['Id_escolaridad'],
+            'id_orientacion_sexual' => $data['Id_orientacion_sexual'],
+            'documentos'            => $data['Documentos'],
+            'nombres'               => $data['Nombres'],
+            'apellidos'             => $data['Apellidos'],
+            'estado_escolaridad'    => $data['Estado_escolaridad'],
+            'sexo'                  => $data['Sexo'],
+            'genero'                => $data['Genero'],
+            'fecha_nacimiento'      => $data['Fecha_nacimento'],
+            'fecha_ingreso'         => $data['Fecha_ingreso'],
+         ]);
 
         $responseMessage = array('msg' => "Nucleo famiiar Guardado correctamente",
                                  'datos' =>  $this->consultaNucleFamiliar($Id),
-                                 'id' => $nucleoFamiliarEntry->id);
+                                 'id' => $Id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
