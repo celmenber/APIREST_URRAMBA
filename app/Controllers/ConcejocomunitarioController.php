@@ -114,7 +114,8 @@ public function consultaMiembrosConcejo($Id)
             "tbl_municipio.Nombre as Municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento"
+            "tbl_corregimiento.Nombre as Corregimiento",
+            "tbl_escolaridad.Nombre as Escolaridad"
          )->join(
                 "tbl_municipio", 
                 "tbl_autoridad_tradicional.Id_municipio","=","tbl_municipio.ID")
@@ -127,6 +128,9 @@ public function consultaMiembrosConcejo($Id)
          ->join(
                 "tbl_tipo_documento", 
                 "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
+         ->join(
+                "tbl_escolaridad", 
+                "tbl_autoridad_tradicional.id_escolaridad","=","tbl_escolaridad.ID")
          ->where("tbl_autoridad_tradicional.ID","=",$Id)->first();
       return $data;
 }
@@ -210,7 +214,6 @@ public function consultaMiembrosConcejo($Id)
             "Id_municipio"=>v::notEmpty(),
             "Nit"=>v::notEmpty(),
             "Nombre_concejo_comunitario"=>v::notEmpty(),
-            "Direccion"=>v::notEmpty(),
          ]); 
 
         if($this->validator->failed())
@@ -247,7 +250,8 @@ public function consultaMiembrosConcejo($Id)
             "tbl_municipio.Nombre as Municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento"
+            "tbl_corregimiento.Nombre as Corregimiento",
+            "tbl_escolaridad.Nombre as Escolaridad"
          )->join(
                 "tbl_municipio", 
                 "tbl_autoridad_tradicional.Id_municipio","=","tbl_municipio.ID")
@@ -257,9 +261,13 @@ public function consultaMiembrosConcejo($Id)
           ->join(
                 "tbl_corregimiento", 
                 "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
-          ->join(
+         ->join(
                 "tbl_tipo_documento", 
-                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")->get();
+                "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
+         ->join(
+                "tbl_escolaridad", 
+                "tbl_autoridad_tradicional.id_escolaridad","=","tbl_escolaridad.ID")
+         ->get();
         return $this->customResponse->is200Response($response,$AutoridadtradicionalEntry);
     }
 
@@ -293,6 +301,7 @@ public function deleteAutoridaTradicional(Response $response,$Id)
             "Sexo" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
+            "Correo" =>v::notEmpty(),
             "Estado" =>v::notOptional(),
             "Fecha_nacimiento" =>v::notEmpty(),
             "Fecha_ingreso" =>v::notEmpty(),
@@ -324,6 +333,7 @@ public function deleteAutoridaTradicional(Response $response,$Id)
             $autoridadtradicionalEntry->sexo                =   $data['Sexo'];
             $autoridadtradicionalEntry->direccion           =   $data['Direccion'];
             $autoridadtradicionalEntry->telefono            =   $data['Telefono'];
+            $autoridadtradicionalEntry->correo              =   $data['Correo'];
             $autoridadtradicionalEntry->estado              =   $data['Estado'];
             $autoridadtradicionalEntry->fecha_nacimiento    =   $data['Fecha_nacimiento'];
             $autoridadtradicionalEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
@@ -356,9 +366,10 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
             "Sexo" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
+            "Correo" =>v::notEmpty(),
             "Estado" =>v::notOptional(),
             "Fecha_nacimiento" =>v::notEmpty(),
-            "Fecha_ingreso" =>v::Empty(),
+            "Fecha_ingreso" =>v::notEmpty(),
          ]); 
 
      if($this->validator->failed())
@@ -387,14 +398,13 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
             'sexo'                =>   $data['Sexo'],
             'direccion'           =>   $data['Direccion'],
             'telefono'            =>   $data['Telefono'],
+            'correo'              =>   $data['Correo'],
             'estado'              =>   $data['Estado'],
             'fecha_nacimiento'    =>   $data['Fecha_nacimiento'],
             'fecha_ingreso'       =>   $data['Fecha_ingreso'],
             ]);
-          
-          //  $autoridadtradicionalEntry->save();
 
-            $responseMessage = array('msg' => "La autoridad tradicional Guardada correctamente",
+            $responseMessage = array('msg' => "La autoridad tradicional editada correctamente",
                                      'datos' => $this->consultaAutoridaTradicional($Id),
                                      'id' => $Id);
 

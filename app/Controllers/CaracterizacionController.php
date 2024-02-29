@@ -25,6 +25,7 @@ class CaracterizacionController {
     $this->validator = new Validator();
 
     }
+    
 
  public function consultaCaracterizacion($Id)
  {

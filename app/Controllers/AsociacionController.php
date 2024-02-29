@@ -153,8 +153,8 @@ public function consultaAsociacionEmpleado($Id){
         try{
         $asociacionEntry = new AsociacionEntry;
         $asociacionEntry->id_municipio  =   $data['Id_municipio'];
-        $asociacionEntry->Nit           =   $data['Nit'];
-        $asociacionEntry->Nombre        =   $data['Nombre'];
+        $asociacionEntry->nit           =   $data['Nit'];
+        $asociacionEntry->nombre        =   $data['Nombre'];
         $asociacionEntry->direccion     =   $data['Direccion'];
         $asociacionEntry->telefono      =   $data['Telefono'];
         $asociacionEntry->correo        =   $data['Correo'];
@@ -175,14 +175,14 @@ public function consultaAsociacionEmpleado($Id){
        public function editAsociacion(Request $request,Response $response,$Id)
     {
        $data = json_decode($request->getBody(),true);
-       $this->validator->validate($request,[
-           "Id_municipio"=>v::notEmpty(),
-           "Nit"=>v::notEmpty(),
-           "Nombre"=>v::notEmpty(),
-           "Direccion"=>v::notEmpty(),
-           "Telefono"=>v::notEmpty(),
-           "Correo"=>v::notEmpty()
-         ]); 
+                $this->validator->validate($request,[
+                    "Id_municipio"=>v::notEmpty(),
+                    "Nit"=>v::notEmpty(),
+                    "Nombre"=>v::notEmpty(),
+                    "Direccion"=>v::notEmpty(),
+                    "Telefono"=>v::notEmpty(),
+                    "Correo"=>v::notEmpty()
+                    ]); 
 
         if($this->validator->failed())
        {
@@ -197,8 +197,8 @@ public function consultaAsociacionEmpleado($Id){
         try{
          AsociacionEntry::where('ID', '=', $Id)->update([
             'id_municipio'  =>   $data['Id_municipio'],
-            'Nit'           =>   $data['Nit'],
-            'Nombre'        =>   $data['Nombre'],
+            'nit'           =>   $data['Nit'],
+            'nombre'        =>   $data['Nombre'],
             'direccion'     =>   $data['Direccion'],
             'telefono'      =>   $data['Telefono'],
             'correo'        =>   $data['Correo'],
@@ -340,11 +340,12 @@ public function consultaAsociacionEmpleado($Id){
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
-    $count = $this->verifyAccountDoc($data['Documentos']);
+
+/*     $count = $this->verifyAccountDoc($data['Documentos']);
         if($count==true){
              $responseMessage = "203-Información no autorizada Asociacion Empleado";
             return $this->customResponse->is203Response($response,$responseMessage);
-        }
+        } */
 
         try{
            AsociacionEmpleadoEntry::where('ID', '=', $Id)->update([
