@@ -3,6 +3,7 @@ namespace  App\Controllers;
 use App\Models\ConcejocomunitarioEntry;
 use App\Models\AutoridadtradicionalEntry;
 use App\Models\ConcejosmiembrosEntry;
+use App\Models\UserEntry;
 
 use App\Response\CustomResponse;
 use App\Validation\Validator;
@@ -23,6 +24,8 @@ class ConcejocomunitarioController
 
     protected $concejosmiembrosEntry;
 
+    protected $userEntry;
+
     protected $validator;
 
     public function __construct()
@@ -32,10 +35,26 @@ class ConcejocomunitarioController
         $this->concejocomunitarioEntry = new ConcejocomunitarioEntry();
         $this->autoridadtradicionalEntry = new AutoridadtradicionalEntry();
         $this->concejosmiembrosEntry = new ConcejosmiembrosEntry();
+        $this->userEntry = new UserEntry();
         $this->validator = new Validator();
 
     }
 /* DESDE AQUI SE PROCESO DE CONSULTAS EJECUCION METODOS */
+public function hashPassword($password)
+{
+    return password_hash($password,PASSWORD_DEFAULT);
+}  
+
+public function verifyAccountUsuario($usuario)
+{
+        $count = $this->userEntry->where(["USERNAME"=>$usuario])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
 public function verifyAccountDocMiembro($Document)
 {
         $count = $this->concejosmiembrosEntry->where(["documentos"=>$Document])->count();
@@ -47,6 +66,22 @@ public function verifyAccountDocMiembro($Document)
 return true;
 }
 
+public function verifyAccountDocMiembroEdit($Document,$Id)
+{
+    $Empleado = $this->concejosmiembrosEntry->where(["ID"=>$Id])->first();
+
+    if($Empleado->documentos == $Document){
+            return false;
+     }else{
+            $count = $this->concejosmiembrosEntry->where(["documentos"=>$Document])->count();
+                    if($count == 0)
+                      {
+                        return false;
+                      }
+           return true;   
+      }
+}
+
 public function verifyAccountDocAutorida($Document)
 {
         $count = $this->autoridadtradicionalEntry->where(["documentos"=>$Document])->count();
@@ -56,6 +91,22 @@ public function verifyAccountDocAutorida($Document)
             }
 
 return true;
+}
+
+public function verifyAccountDocAutoridaEdit($Document,$Id)
+{
+    $Empleado = $this->autoridadtradicionalEntry->where(["ID"=>$Id])->first();
+
+    if($Empleado->documentos == $Document){
+            return false;
+     }else{
+            $count = $this->autoridadtradicionalEntry->where(["documentos"=>$Document])->count();
+                    if($count == 0)
+                      {
+                        return false;
+                      }
+           return true;   
+      }
 }
 
 public function consultaConcejocomunitario($Id)
@@ -226,9 +277,8 @@ public function consultaMiembrosConcejo($Id)
         	'id_asociacion'              =>   $data['Id_asociacion'],
             'id_autoridad_tradicional'   =>   $data['Id_autoridad_tradicional'],
             'id_municipio'               =>   $data['Id_municipio'],
-            'Nit'                        =>   $data['Nit'],
-            'Nombre_concejo_comunitario' =>   $data['Nombre_concejo_comunitario'],
-            'Direccion'                  =>   $data['Direccion'],
+            'nit'                        =>   $data['Nit'],
+            'nombre_concejo_comunitario' =>   $data['Nombre_concejo_comunitario'],
             ]);
             $responseMessage = array('msg' => "Asociacion Guardada correctamente",
                                      'datos' =>  $this->consultaConcejocomunitario($Id),  
@@ -289,6 +339,7 @@ public function deleteAutoridaTradicional(Response $response,$Id)
        $data = json_decode($request->getBody(),true);
        
        $this->validator->validate($request,[
+            "id_usuario" =>v::notEmpty(),
             "Id_municipio" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
@@ -315,12 +366,19 @@ public function deleteAutoridaTradicional(Response $response,$Id)
 
         $count = $this->verifyAccountDocAutorida($data['Documentos']);
         if($count==true){
-             $responseMessage = "203-Información no autorizada Autoridad tradicional";
+             $responseMessage = "203-1-Información no autorizada Autoridad afro";
             return $this->customResponse->is203Response($response,$responseMessage);
         } 
 
+        $count = $this->verifyAccountUsuario($data['Correo']);
+          if($count==true){
+             $responseMessage = "203-2-Información no autorizada Usuario Autoridad";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        }
+
         try{
             $autoridadtradicionalEntry = new AutoridadtradicionalEntry;
+            $autoridadtradicionalEntry->id_usuario          =   $data['Id_usuario'];
             $autoridadtradicionalEntry->id_municipio        =   $data['Id_municipio'];
             $autoridadtradicionalEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
             $autoridadtradicionalEntry->id_corregimiento    =   $data['Id_corregimiento'];
@@ -338,6 +396,14 @@ public function deleteAutoridaTradicional(Response $response,$Id)
             $autoridadtradicionalEntry->fecha_nacimiento    =   $data['Fecha_nacimiento'];
             $autoridadtradicionalEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
             $autoridadtradicionalEntry->save();
+
+            $userEntry = new UserEntry;
+            $userEntry->ID_EMP      =   $autoridadtradicionalEntry->id;
+            $userEntry->USERNAME    =   $data['Correo'];
+            $userEntry->PASSWORD    =   $this->hashPassword($data['Documentos']);
+            $userEntry->ESTADO      =   $data['Estado'];
+            $userEntry->ID_ROLL     =   2;
+            $userEntry->save();
 
             $responseMessage = array('msg'  => "La autoridad tradicional Guardada correctamente",
                                     'datos' => $this->consultaAutoridaTradicional($autoridadtradicionalEntry->id),
@@ -378,11 +444,11 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
-    /*     $count = $this->verifyAccountDocAutorida($data['Documentos']);
+        $count = $this->verifyAccountDocAutoridaEdit($data['Documentos'], $Id);
         if($count==true){
              $responseMessage = "203-Información no autorizada Autoridad tradicional";
             return $this->customResponse->is203Response($response,$responseMessage);
-        }  */
+        } 
 
         try{
          AutoridadtradicionalEntry::where('ID', '=', $Id)->update([
@@ -482,6 +548,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_conncejo_comunitario" =>v::notEmpty(),
+            "Id_usuario" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
@@ -516,6 +583,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
         try{
             $concejosmiembrosEntry = new ConcejosmiembrosEntry;
             $concejosmiembrosEntry->id_conncejo_comunitario =   $data['Id_conncejo_comunitario'];
+            $concejosmiembrosEntry->id_usuario              =   $data['Id_usuario'];
             $concejosmiembrosEntry->id_barrio_vereda        =   $data['Id_barrio_vereda'];
             $concejosmiembrosEntry->id_corregimiento        =   $data['Id_corregimiento'];
             $concejosmiembrosEntry->id_tipo_documento       =   $data['Id_tipo_documento'];
@@ -576,12 +644,12 @@ public function deleteMiembrosConcejo(Response $response,$Id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
-    // $count = $this->verifyAccountDocMiembro($data['Documentos']);
-    /* if($count==true)
+     $count = $this->verifyAccountDocMiembroEdit($data['Documentos'], $Id);
+     if($count==true)
        {
               $responseMessage = "203-Información no autorizada Miembros Concejo";
             return $this->customResponse->is203Response($response,$responseMessage);
-       } */
+       }
        
         try{
                      ConcejosmiembrosEntry::where('ID', '=', $Id)->update([

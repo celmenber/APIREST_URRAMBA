@@ -20,12 +20,15 @@ class AsociacionController {
 
      protected $asociacionEmpleadoEntry;
 
+    protected $userEntry;
+
     protected $validator;
 
     public function __construct()
     {
     $this->customResponse = new CustomResponse();
     $this->asociacionEntry = new AsociacionEntry();
+    $this->userEntry = new UserEntry();
     $this->asociacionEmpleadoEntry = new AsociacionEmpleadoEntry();
     $this->validator = new Validator();
 
@@ -36,11 +39,9 @@ public function hashPassword($password)
 {
     return password_hash($password,PASSWORD_DEFAULT);
 }   
-
-
-public function verifyAccountNit($Nit)
+public function verifyAccountUsuario($usuario)
 {
-        $count = $this->asociacionEntry->where(["Nit"=>$Nit])->count();
+        $count = $this->userEntry->where(["USERNAME"=>$usuario])->count();
             if($count == 0)
             {
                 return false;
@@ -48,6 +49,34 @@ public function verifyAccountNit($Nit)
 
 return true;
 }
+public function verifyAccountNit($Nit)
+{
+        $count = $this->asociacionEntry->where(["nit"=>$Nit])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+
+public function verifyAccountNitEdit($Nit,$Id)
+{
+    $asociacion = $this->asociacionEntry->where(["ID"=>$Id])->first();
+
+    if($asociacion->nit == $Nit){
+            return false;
+     }else{
+            $count = $this->asociacionEntry->where(["nit"=>$Nit])->count();
+                    if($count == 0)
+                      {
+                        return false;
+                      }
+           return true;   
+      }
+}
+
+
 public function verifyAccountDoc($Document)
 {
         $count = $this->asociacionEmpleadoEntry->where(["documentos"=>$Document])->count();
@@ -59,16 +88,34 @@ public function verifyAccountDoc($Document)
 return true;
 }
 
+public function verifyAccountDocEdit($Document,$Id)
+{
+    $Empleado = $this->asociacionEmpleadoEntry->where(["ID"=>$Id])->first();
+
+    if($Empleado->documentos == $Document){
+            return false;
+     }else{
+            $count = $this->asociacionEmpleadoEntry->where(["documentos"=>$Document])->count();
+                    if($count == 0)
+                      {
+                        return false;
+                      }
+           return true;   
+      }
+}
+
+
+
  public function consultaAsociacion($Id)
  {
         $data = asociacionEntry::select(
            "tbl_asociacion.ID",
-           "tbl_asociacion.Nit",
-           "tbl_asociacion.Nombre",
-           "tbl_asociacion.Direccion",
-           "tbl_asociacion.Telefono",
-           "tbl_asociacion.Correo",
-           "tbl_asociacion.Id_municipio",
+           "tbl_asociacion.nit",
+           "tbl_asociacion.nombre",
+           "tbl_asociacion.direccion",
+           "tbl_asociacion.telefono",
+           "tbl_asociacion.correo",
+           "tbl_asociacion.id_municipio",
            "tbl_municipio.Nombre AS municipio"
          )->join(
                 "tbl_municipio", 
@@ -189,11 +236,13 @@ public function consultaAsociacionEmpleado($Id){
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
-       /*  $count = $this->verifyAccountNit($data['Nit']);
+
+       $count = $this->verifyAccountNitEdit($data['Nit'],$Id);
         if($count==true){
-             $responseMessage = "101-Invalido Asociacion";
+             $responseMessage = "101-Invalido Asociacion documento";
             return $this->customResponse->is203Response($response,$responseMessage);
-        } */
+        }
+
         try{
          AsociacionEntry::where('ID', '=', $Id)->update([
             'id_municipio'  =>   $data['Id_municipio'],
@@ -277,11 +326,18 @@ public function consultaAsociacionEmpleado($Id){
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
-        $count = $this->verifyAccountDoc($data['Documentos']);
-        if($count==true){
-             $responseMessage = "203-Información no autorizada  Asociacion Empleado";
+    $count = $this->verifyAccountDoc($data['Documentos']);
+           if($count==true){
+             $responseMessage = "203-Información no autorizada Asociacion Empleado";
             return $this->customResponse->is203Response($response,$responseMessage);
-        }
+           }
+
+    $count = $this->verifyAccountUsuario($data['Correo']);
+          if($count==true){
+             $responseMessage = "203-Información no autorizada Usuario Empleado";
+            return $this->customResponse->is203Response($response,$responseMessage);
+           }
+
 
         try{
             $asociacionEmpleadoEntry = new AsociacionEmpleadoEntry;
@@ -341,11 +397,11 @@ public function consultaAsociacionEmpleado($Id){
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
-/*     $count = $this->verifyAccountDoc($data['Documentos']);
+        $count = $this->verifyAccountDocEdit($data['Documentos'],$Id);
         if($count==true){
              $responseMessage = "203-Información no autorizada Asociacion Empleado";
             return $this->customResponse->is203Response($response,$responseMessage);
-        } */
+        }
 
         try{
            AsociacionEmpleadoEntry::where('ID', '=', $Id)->update([

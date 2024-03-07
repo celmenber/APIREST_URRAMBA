@@ -39,6 +39,49 @@ public function verifyAccountDocjefeHogar($Document)
 
 return true;
 }
+
+public function verifyAccountDocjefeHogaredit($Document,$Id)
+{
+    $Empleado = $this->jefeHogarEntry->where(["ID"=>$Id])->first();
+
+    if($Empleado->documentos == $Document){
+            return false;
+     }else{
+            $count = $this->jefeHogarEntry->where(["documentos"=>$Document])->count();
+                    if($count == 0)
+                      {
+                        return false;
+                      }
+           return true;   
+      }
+}
+
+public function verifyAccountDocNucleoFamilia($Document)
+{
+        $count = $this->nucleoFamiliarEntry->where(["documentos"=>$Document])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+
+public function verifyAccountDocNucleoFamiliaedit($Document,$Id)
+{
+    $Empleado = $this->nucleoFamiliarEntry->where(["ID"=>$Id])->first();
+
+    if($Empleado->documentos == $Document){
+            return false;
+     }else{
+            $count = $this->nucleoFamiliarEntry->where(["documentos"=>$Document])->count();
+                    if($count == 0)
+                      {
+                        return false;
+                      }
+           return true;   
+      }
+}
      /* DESDE AQUI SE PROCESAN CONSULTAS JEFE DE HOGAR */
 public function consultaJefeHogar($Id)
 {
@@ -80,13 +123,10 @@ public function consultaNucleFamiliar($Id)
 {
  $data = nucleoFamiliarEntry::select(
             "tbl_nucleo_familiar.*",
-            "tbl_jefe_hogar.ID as ID_jefehogar",
             "tbl_jefe_hogar.nombres as Nombres_jefehogar",
             "tbl_jefe_hogar.apellidos as Apellidos_jefehogar",
             "tbl_parentesco.Nombre as Parentesco",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento",
             "tbl_escolaridad.Nombre as Escolaridad",
          )->join(
                 "tbl_jefe_hogar", 
@@ -94,12 +134,6 @@ public function consultaNucleFamiliar($Id)
           ->join(
                 "tbl_parentesco", 
                 "tbl_nucleo_familiar.id_parentesco","=","tbl_parentesco.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_nucleo_familiar.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
-                "tbl_corregimiento", 
-                "tbl_nucleo_familiar.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
                 "tbl_tipo_documento", 
                 "tbl_nucleo_familiar.id_tipo_documento","=","tbl_tipo_documento.ID")
@@ -168,13 +202,14 @@ public function createJefeHogar(Request $request,Response $response)
        $this->validator->validate($request,[
             "Id_concejo_comunitario" =>v::notEmpty(),
             "Id_municipio" =>v::notEmpty(),
+            "Id_usuario" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),           
             "Id_escolaridad" =>v::notEmpty(),
             "Id_orientacion_sexual" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
-            "Nombres " =>v::notEmpty(),
+            "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Estado_escolaridad" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
@@ -193,14 +228,21 @@ public function createJefeHogar(Request $request,Response $response)
        } 
 
         $count = $this->verifyAccountDocjefeHogar($data['Documentos']);
-        if($count==true){
-              $responseMessage = "203-Información no autorizada Jefe Hogar";
-            return $this->customResponse->is203Response($response,$responseMessage);
-        } 
+                  if($count==true){
+                        $responseMessage = "203-1-Información no autorizada Jefe Hogar";
+                        return $this->customResponse->is203Response($response,$responseMessage);
+                  }
+
+         $count = $this->verifyAccountDocNucleoFamilia($data['Documentos']);
+                  if($count==true){
+                        $responseMessage = "203-2-Información no autorizada miembro nucleo familiar";
+                        return $this->customResponse->is203Response($response,$responseMessage);
+                  }
 
         try{
         $jefeHogarEntry = new JefeHogarEntry;
         $jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
+        $jefeHogarEntry->id_usuario              = $data['Id_usuario'];
         $jefeHogarEntry->id_municipio            = $data['Id_municipio'];
         $jefeHogarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
         $jefeHogarEntry->id_corregimiento        = $data['Id_corregimiento'];
@@ -218,7 +260,7 @@ public function createJefeHogar(Request $request,Response $response)
         $jefeHogarEntry->estado                  = $data['Estado'];
         $jefeHogarEntry->fecha_nacimiento        = $data['Fecha_nacimiento'];
         $jefeHogarEntry->fecha_ingreso           = $data['Fecha_ingreso'];
-
+        $jefeHogarEntry->save();
         $responseMessage = array('msg' => "Jefe de hogar Guardado correctamente",
                                  'datos' =>  $this->consultaJefeHogar($jefeHogarEntry->id),
                                  'id' => $jefeHogarEntry->id);
@@ -243,7 +285,7 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
             "Id_escolaridad" =>v::notEmpty(),
             "Id_orientacion_sexual" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
-            "Nombres " =>v::notEmpty(),
+            "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Estado_escolaridad" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
@@ -261,7 +303,7 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
-        $count = $this->verifyAccountDocjefeHogar($data['Documentos']);
+       $count = $this->verifyAccountDocjefeHogaredit($data['Documentos'], $Id);
         if($count==true){
               $responseMessage = "203-Información no autorizada Jefe Hogar";
             return $this->customResponse->is203Response($response,$responseMessage);
@@ -382,13 +424,11 @@ public function createNucleoFamiliar(Request $request,Response $response)
        $this->validator->validate($request,[
             "Id_jefe_hogar" =>v::notEmpty(),
             "Id_parentesco" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
-            "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),           
             "Id_escolaridad" =>v::notEmpty(),
             "Id_orientacion_sexual" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
-            "Nombres " =>v::notEmpty(),
+            "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Estado_escolaridad" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
@@ -402,16 +442,26 @@ public function createNucleoFamiliar(Request $request,Response $response)
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
+       $count = $this->verifyAccountDocNucleoFamilia($data['Documentos']);
+        if($count==true){
+              $responseMessage = "203-2-Información no autorizada miembro nucleo familiar";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        }
+
+        $count = $this->verifyAccountDocjefeHogar($data['Documentos']);
+        if($count==true){
+              $responseMessage = "203-1-Información no autorizada Jefe Hogar";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        }
+
         try{
         $nucleoFamiliarEntry = new NucleoFamiliarEntry;
         $nucleoFamiliarEntry->id_jefe_hogar           = $data['Id_jefe_hogar'];
         $nucleoFamiliarEntry->id_parentesco           = $data['Id_parentesco'];
-        $nucleoFamiliarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
-        $nucleoFamiliarEntry->id_corregimiento        = $data['Id_corregimiento'];
         $nucleoFamiliarEntry->id_tipo_documento       = $data['Id_tipo_documento'];
         $nucleoFamiliarEntry->id_escolaridad          = $data['Id_escolaridad'];
         $nucleoFamiliarEntry->id_orientacion_sexual   = $data['Id_orientacion_sexual'];
-        $nucleoFamiliarEntry->documentos              = $data['Documentos'];
+        $nucleoFamiliarEntry->documento               = $data['Documentos'];
         $nucleoFamiliarEntry->nombres                 = $data['Nombres'];
         $nucleoFamiliarEntry->apellidos               = $data['Apellidos'];
         $nucleoFamiliarEntry->estado_escolaridad      = $data['Estado_escolaridad'];
@@ -419,7 +469,7 @@ public function createNucleoFamiliar(Request $request,Response $response)
         $nucleoFamiliarEntry->genero                  = $data['Genero'];
         $nucleoFamiliarEntry->fecha_nacimiento        = $data['Fecha_nacimiento'];
         $nucleoFamiliarEntry->fecha_ingreso           = $data['Fecha_ingreso'];
-
+        $nucleoFamiliarEntry->save();
         $responseMessage = array('msg' => "Nucleo famiiar Guardado correctamente",
                                  'datos' =>  $this->consultaNucleFamiliar($nucleoFamiliarEntry->id),
                                  'id' => $nucleoFamiliarEntry->id);
@@ -436,13 +486,11 @@ public function createNucleoFamiliar(Request $request,Response $response)
        $this->validator->validate($request,[
             "Id_jefe_hogar" =>v::notEmpty(),
             "Id_parentesco" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
-            "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),           
             "Id_escolaridad" =>v::notEmpty(),
             "Id_orientacion_sexual" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
-            "Nombres " =>v::notEmpty(),
+            "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Estado_escolaridad" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
@@ -456,12 +504,16 @@ public function createNucleoFamiliar(Request $request,Response $response)
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
 
+      $count = $this->verifyAccountDocNucleoFamiliaedit($data['Documentos'], $Id);
+        if($count==true){
+              $responseMessage = "203-1-Información no autorizada Jefe Hogar";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        }
+
         try{
   NucleoFamiliarEntry::where('ID', '=', $Id)->update([
             'id_jefe_hogar'         => $data['Id_jefe_hogar'],
             'id_parentesco'         => $data['Id_parentesco'],
-            'id_barrio_vereda'      => $data['Id_barrio_vereda'],
-            'id_corregimiento'      => $data['Id_corregimiento'],
             'id_tipo_documento'     => $data['Id_tipo_documento'],
             'id_escolaridad'        => $data['Id_escolaridad'],
             'id_orientacion_sexual' => $data['Id_orientacion_sexual'],
