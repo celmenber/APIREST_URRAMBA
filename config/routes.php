@@ -79,6 +79,7 @@ return function (App $app)
       {
          $app->get("/view-jefehogar",[GrupoFamiliarController::class, 'viewJefeHogar']);
          $app->get("/view-jefehogar/{Id}",[GrupoFamiliarController::class,'viewJefeHogarId']);
+         $app->get("/view-jefehogar-documento/{Doc}",[GrupoFamiliarController::class,'viewJefeHogarDocuments']);
          $app->post("/create-jefehogar",[GrupoFamiliarController::class,'createJefeHogar']);
          $app->put("/edit-jefehogar/{Id}",[GrupoFamiliarController::class,'editarJefeHogar']);
          $app->patch("/estado-jefehogar/{Id}",[GrupoFamiliarController::class,'estadoJefeHogar']);

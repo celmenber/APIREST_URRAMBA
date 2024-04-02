@@ -83,7 +83,8 @@ public function verifyAccountDocNucleoFamiliaedit($Document,$Id)
       }
 }
      /* DESDE AQUI SE PROCESAN CONSULTAS JEFE DE HOGAR */
-public function consultaJefeHogar($Id)
+
+public function consultaJefeHogarCed($param)
 {
  $data = jefeHogarEntry::select(
             "tbl_jefe_hogar.*",
@@ -114,7 +115,44 @@ public function consultaJefeHogar($Id)
           ->join(
                 "tbl_orientacion_sexual", 
                 "tbl_jefe_hogar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")      
-          ->where("tbl_jefe_hogar.ID","=",$Id)->first();
+          ->where("tbl_jefe_hogar.documentos","like",'%'.$param.'%')->get();
+
+        return $data;
+
+}
+
+public function consultaJefeHogar($Id)
+{
+ $data = jefeHogarEntry::select(
+            "tbl_jefe_hogar.*",
+            "tbl_conncejos_comunitarios.Nombre_concejo_comunitario as Concejo_Comunitario",
+            "tbl_municipio.Nombre as Municipio",
+            "tbl_tipo_documento.Nombre as Tipo_documento",
+            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+            "tbl_corregimiento.Nombre as Corregimiento",
+            "tbl_escolaridad.Nombre as Escolaridad"
+         )->join(
+                "tbl_conncejos_comunitarios", 
+                "tbl_jefe_hogar.id_concejo_comunitario","=","tbl_conncejos_comunitarios.ID")
+          ->join(
+                "tbl_municipio", 
+                "tbl_jefe_hogar.Id_municipio","=","tbl_municipio.ID")
+          ->join(
+                "tbl_veredas_barrios", 
+                "tbl_jefe_hogar.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+          ->join(
+                "tbl_corregimiento", 
+                "tbl_jefe_hogar.id_corregimiento","=","tbl_corregimiento.ID")
+          ->join(
+                "tbl_tipo_documento", 
+                "tbl_jefe_hogar.id_tipo_documento","=","tbl_tipo_documento.ID")
+          ->join(
+                "tbl_escolaridad", 
+                "tbl_jefe_hogar.id_escolaridad","=","tbl_escolaridad.ID")
+          ->join(
+                "tbl_orientacion_sexual", 
+                "tbl_jefe_hogar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")  
+         ->where("tbl_jefe_hogar.ID","=",$Id)->first(); 
 
         return $data;
 
@@ -185,8 +223,14 @@ return $data;
 }
 
 public function viewJefeHogarId(Response $response,$Id)
- {
+{
         $JefeHogarEntry = $this->consultaJefeHogar($Id);
+        return $this->customResponse->is200Response($response,$JefeHogarEntry);
+}
+
+public function viewJefeHogarDocuments(Response $response,$Doc)
+{
+        $JefeHogarEntry = $this->consultaJefeHogarCed($Doc);
         return $this->customResponse->is200Response($response,$JefeHogarEntry);
 }
 
@@ -333,7 +377,7 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
           ]);
 
         $responseMessage = array('msg' => "Jefe de hogar actualizado correctamente",
-                                 'datos' =>  $this->consultaJefeHogar($Id),
+                                 'datos' =>  $this->consultaJefeHogar($Id,0),
                                  'id' => $Id);
 
         return $this->customResponse->is200Response($response,$responseMessage);
@@ -379,8 +423,6 @@ public function estadoJefeHogar(Request $request,Response $response, $Id)
             "tbl_jefe_hogar.apellidos as Apellidos_jefehogar",
             "tbl_parentesco.Nombre as Parentesco",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento",
             "tbl_escolaridad.Nombre as Escolaridad",
          )->join(
                 "tbl_jefe_hogar", 
@@ -388,12 +430,6 @@ public function estadoJefeHogar(Request $request,Response $response, $Id)
           ->join(
                 "tbl_parentesco", 
                 "tbl_nucleo_familiar.id_parentesco","=","tbl_parentesco.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_nucleo_familiar.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
-                "tbl_corregimiento", 
-                "tbl_nucleo_familiar.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
                 "tbl_tipo_documento", 
                 "tbl_nucleo_familiar.id_tipo_documento","=","tbl_tipo_documento.ID")
