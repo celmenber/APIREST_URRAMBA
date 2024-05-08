@@ -497,7 +497,7 @@ public function createNucleoFamiliar(Request $request,Response $response)
         $nucleoFamiliarEntry->id_tipo_documento       = $data['Id_tipo_documento'];
         $nucleoFamiliarEntry->id_escolaridad          = $data['Id_escolaridad'];
         $nucleoFamiliarEntry->id_orientacion_sexual   = $data['Id_orientacion_sexual'];
-        $nucleoFamiliarEntry->documento               = $data['Documentos'];
+        $nucleoFamiliarEntry->documentos              = $data['Documentos'];
         $nucleoFamiliarEntry->nombres                 = $data['Nombres'];
         $nucleoFamiliarEntry->apellidos               = $data['Apellidos'];
         $nucleoFamiliarEntry->estado_escolaridad      = $data['Estado_escolaridad'];

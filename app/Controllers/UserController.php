@@ -44,51 +44,99 @@ class UserController
         return password_hash($password,PASSWORD_DEFAULT);
     }
 
+ public function verifyAccount($users,$Id)
+    {
+        $User = $this->userEntry->where(["ID_USER"=>$Id])->first();
+
+        if($User->USERNAME == $users){
+                return false;
+        }else{
+                $count = $this->userEntry->where(["USERNAME"=>$users])->count();
+                        if($count == 0)
+                        {
+                            return false;
+                        }
+            return true;   
+        }
+    }
+
+    public function handleUser()
+    {
+       $guestEntries = userEntry::select(
+                        "tbl_user_login.ID_USER",
+                        "tbl_user_login.ID_ROLL",
+                        "tbl_user_login.ID_AUT",
+                        "tbl_user_login.ID_EMP",
+                        "tbl_user_login.USERNAME",
+                        "tbl_user_login.ESTADO",
+                        "tbl_user_login.AVATAR",
+                        "tbl_user_login.FECHA",
+                        "tbl_user_roll.NOMBRE as USER_ROL",
+                        "tbl_asociacion_empleados.documentos AS emp_documento",
+                        "tbl_asociacion_empleados.nombres AS emp_nombres",
+                        "tbl_asociacion_empleados.apellidos AS emp_apellidos",
+                        "tbl_asociacion_empleados.telefono AS emp_telefono",
+                        "tbl_autoridad_tradicional.documentos AS aut_documentos",
+                        "tbl_autoridad_tradicional.nombres AS aut_nombres",
+                        "tbl_autoridad_tradicional.apellidos AS aut_apellidos",
+                        "tbl_autoridad_tradicional.telefono AS aut_telefono"
+                        )
+                        ->join(
+                            "tbl_user_roll",
+                            "tbl_user_login.ID_ROLL","=","tbl_user_roll.ID")
+                        ->leftJoin(
+                            "tbl_asociacion_empleados", 
+                            "tbl_user_login.ID_EMP","=","tbl_asociacion_empleados.ID") 
+                        ->leftJoin(
+                            "tbl_autoridad_tradicional",
+                            "tbl_user_login.ID_AUT","=","tbl_autoridad_tradicional.ID")
+                        ->get();
+        return $guestEntries;
+    }
+
+    public function handleUserId($Id)
+    {
+       $userEntries = userEntry::select(
+                       "tbl_user_login.ID_USER",
+                        "tbl_user_login.ID_ROLL",
+                        "tbl_user_login.ID_AUT",
+                        "tbl_user_login.ID_EMP",
+                        "tbl_user_login.USERNAME",
+                        "tbl_user_login.ESTADO",
+                        "tbl_user_login.AVATAR",
+                        "tbl_user_login.FECHA",
+                        "tbl_user_roll.NOMBRE as USER_ROL",
+                        "tbl_asociacion_empleados.documentos AS emp_documento",
+                        "tbl_asociacion_empleados.nombres AS emp_nombres",
+                        "tbl_asociacion_empleados.apellidos AS emp_apellidos",
+                        "tbl_asociacion_empleados.telefono AS emp_telefono",
+                        "tbl_autoridad_tradicional.documentos AS aut_documentos",
+                        "tbl_autoridad_tradicional.nombres AS aut_nombres",
+                        "tbl_autoridad_tradicional.apellidos AS aut_apellidos",
+                        "tbl_autoridad_tradicional.telefono AS aut_telefono"
+                        )
+                        ->join(
+                            "tbl_user_roll",
+                            "tbl_user_login.ID_ROLL","=","tbl_user_roll.ID")
+                        ->leftJoin(
+                            "tbl_asociacion_empleados", 
+                            "tbl_user_login.ID_EMP","=","tbl_asociacion_empleados.ID") 
+                        ->leftJoin(
+                            "tbl_autoridad_tradicional",
+                            "tbl_user_login.ID_AUT","=","tbl_autoridad_tradicional.ID")
+                        ->where("ID_USER","=",$Id)->first();
+       return $userEntries;
+    }
+
 /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA USER LOGIN */
     public function viewUser(Response $response)
     {
-        $guestEntries = userEntry::select(
-            "tbl_user_login.ID_USER",
-            "tbl_user_login.ID_ROLL",
-            "tbl_user_login.ID_AUT",
-            "tbl_user_login.ID_EMP",
-            "tbl_user_login.USERNAME",
-            "tbl_user_login.ESTADO",
-            "tbl_user_login.AVATAR",
-            "tbl_user_login.FECHA",
-            "tbl_user_roll.NOMBRE as USER_ROL",
-            "tbl_asociacion_empleados.documentos AS emp_documento",
-            "tbl_asociacion_empleados.nombres AS emp_nombres",
-            "tbl_asociacion_empleados.apellidos AS emp_apellidos",
-            "tbl_asociacion_empleados.telefono AS emp_telefono",
-            "tbl_autoridad_tradicional.documentos AS aut_documentos",
-            "tbl_autoridad_tradicional.nombres AS aut_nombres",
-            "tbl_autoridad_tradicional.apellidos AS aut_apellidos",
-            "tbl_autoridad_tradicional.telefono AS aut_telefono"
-            )
-            ->join(
-                "tbl_user_roll",
-                "tbl_user_login.ID_ROLL","=","tbl_user_roll.ID")
-             ->leftJoin(
-                "tbl_asociacion_empleados", 
-                "tbl_user_login.ID_EMP","=","tbl_asociacion_empleados.ID") 
-             ->leftJoin(
-                "tbl_autoridad_tradicional",
-                "tbl_user_login.ID_AUT","=","tbl_autoridad_tradicional.ID")
-            ->get();
-        return $this->customResponse->is200Response($response,$guestEntries); 
+        return $this->customResponse->is200Response($response, $this->handleUser()); 
     }
 
     public function viewUserId(Response $response,$Id)
     {
-       $guestEntries = userEntry::select(
-                       "ID_USER",
-                       "ID_ROLL",
-                       "USERNAME",
-                       "ESTADO",
-                       "AVATAR",
-                       "FECHA"
-                       )->where("ID_USER","=",$Id)->first();
+        $guestEntries = $this->handleUserId($Id);
         return $this->customResponse->is200Response($response,$guestEntries);
     }
 
@@ -148,26 +196,64 @@ class UserController
     {
          $data = json_decode($request->getBody(),true);
          $this->validator->validate($request,[
-           "Roll"=>v::notEmpty(),
-           "Usuario"=>v::notEmpty(),
-           "Estado"=>v::notEmpty()
+           "ID_ROLL"=>v::notEmpty(),
+           "USERNAME"=>v::notEmpty()
          ]);
-         
+
         if($this->validator->failed())
         {
             $responseMessage = $this->validator->errors;
             return $this->customResponse->is400Response($response,$responseMessage);
         }
+               $verifyAccount = $this->verifyAccount($data['USERNAME'],$Id);
+
+                if($verifyAccount==true)
+                {
+                    $responseMessage = "203-1-Información no autorizada cambio usuario";
+                    return $this->customResponse->is203Response($response,$responseMessage);
+                } 
         try{
-                $guestEntry = UserEntry::find($Id);
-                $guestEntry->ID_ROLL     =   $data['Roll'];
-                $guestEntry->USERNAME    =   $data['Usuario'];
-                $guestEntry->ESTADO      =   $data['Usuario'];
-                $guestEntry->save();
-                $responseMessage = array('msg' => "usuario Editado correctamente",
-                                           'id'=> $Id);
+
+           UserEntry::where('ID_USER', '=', $Id)->update([
+                            'ID_ROLL' =>  $data['ID_ROLL'],
+                            'USERNAME' => $data['USERNAME'],
+                            ]);
+
+                $responseMessage =  $this->handleUserId($Id);
                 return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
+                $responseMessage = array("err" => $err->getMessage());
+                return $this->customResponse->is400Response($response,$responseMessage);
+            }
+    }
+    public function editUserEstado(Request $request,Response $response,$Id)
+    {
+        $data = json_decode($request->getBody(),true);
+            try{
+                    UserEntry::where('ID_USER', '=', $Id)->update([
+                                    'ESTADO' => $data['ESTADO'],
+                    ]);
+
+                    $userEntries = $this->handleUserId($Id);
+                    //$this->handleUser();
+                    return $this->customResponse->is200Response($response,$userEntries);
+                }catch(Exception $err){
+                $responseMessage = array("err" => $err->getMessage());
+                return $this->customResponse->is400Response($response,$responseMessage);
+            }
+    }
+
+ public function userCambioClave(Request $request,Response $response,$Id)
+    {
+        $data = json_decode($request->getBody(),true);
+            try{
+                    UserEntry::where('ID_USER', '=', $Id)->update([
+                                     'PASSWORD' => $this->hashPassword($data['DOCUMENTO']),
+                    ]);
+
+                    $userEntries = $this->handleUserId($Id);
+                    return $this->customResponse->is200Response($response,$userEntries);
+                }catch(Exception $err){
                 $responseMessage = array("err" => $err->getMessage());
                 return $this->customResponse->is400Response($response,$responseMessage);
             }
@@ -245,124 +331,5 @@ class UserController
         return $this->customResponse->is400Response($response,$responseMessage);
        }
     }
-
     /* FIN DEL CRUE PERMISO */
-    /* DESDE AQUI SE PROCESA EL CRUE DE LA TABLA ACCESOS */
- public function viewUserAcceso(Response $response)
-    {
-        $guestEntriesacceso = $this->userEntryacceso->get();
-        return $this->customResponse->is200Response($response,$guestEntriesacceso);
-    }
-
-    public function viewUserAccesoid(Response $response,$Id)
-    {
-        $guestEntriesacceso = $this->userEntryacceso->where(["ID"=>$Id])->get();
-        return $this->customResponse->is200Response($response,$guestEntriesacceso);
-    }
-
-   public function createuserAcceso(Request $request,Response $response)
-    {
-
-         $data = json_decode($request->getBody(),true);
-         $this->validator->validate($request,[
-            "IDUSER"=>v::notEmpty(),
-            "LAT"=>v::notEmpty(),
-            "LON"=>v::notEmpty(),
-            "CIUDAD"=>v::notEmpty(),
-            "PAIS"=>v::notEmpty(),
-            "IP"=>v::notEmpty()
-          ]); 
-
-       if($this->validator->failed())
-       {
-           $responseMessage = $this->validator->errors;
-           return $this->customResponse->is400Response($response,$responseMessage);
-       }
-
-    try{
-        $Guestentryacceso = new UserEntryacceso;
-        $Guestentryacceso->ID_USER         =   $data['IDUSER'];
-        $Guestentryacceso->LAT             =   $data['LAT'];
-        $Guestentryacceso->LON             =   $data['LON'];
-        $Guestentryacceso->CIUDAD          =   $data['CIUDAD'];
-        $Guestentryacceso->PAIS            =   $data['PAIS'];
-        $Guestentryacceso->IP              =   $data['IP'];
-        $Guestentryacceso->save();
-        $responseMessage = array('msg' => "auditoria Guardada correctamente",'id' => $Guestentryacceso->id);
-        return $this->customResponse->is200Response($response,$responseMessage);
-        }catch(Exception $err){
-        $responseMessage = array("err" => $err->getMessage());
-        return $this->customResponse->is400Response($response,$responseMessage);
-       }
-    }
-    /* FIN DEL CRUE ACCESOS */
-    /* DESDE AQUI SE PROCESA EL CRUE DE LA TABLA GT_USER LA CUAL ES AUXILIAR */
-    public function viewUserGt(Response $response)
-    {
-        $usergt_userentry = $this->usergtEntry->get();
-        return $this->customResponse->is200Response($response,$usergt_userentry);
-    }
-
-    public function viewUserGtid(Response $response,$Id)
-    {
-        $guestgt_userentry = $this->usergtEntry->where(["ID"=>$Id])->first();
-        return $this->customResponse->is200Response($response,$guestgt_userentry);
-    }
-
-    public function createuserGt(Request $request,Response $response)
-    {
-        $data = json_decode($request->getBody(),true);
-        $this->validator->validate($request,[
-            "IDUSER"=>v::notEmpty(),
-            "IDTIPOUSER"=>v::notEmpty() 
-       ]); 
-
-       if($this->validator->failed())
-       {
-           $responseMessage = $this->validator->errors;
-           return $this->customResponse->is400Response($response,$responseMessage);
-       }
-
-       try{
-        $gtuserentry =  new GT_user; 
-        $gtuserentry->ID_USER         =   $data['IDUSER'];
-        $gtuserentry->ID_TIPO_USER    =   $data['IDTIPOUSER'];
-        $gtuserentry->save();
-        $responseMessage = array('msg' => "gt USUARIO guardado correctamente",
-                                  'id' => $gtuserentry->id);
-        return $this->customResponse->is200Response($response,$responseMessage);
-        }catch(Exception $err){
-        $responseMessage = array("err" => $err->getMessage());
-        return $this->customResponse->is400Response($response,$responseMessage);
-       }
-    }
-
-    public function editUserGt(Request $request,Response $response,$Id)
-    {
-         $data = json_decode($request->getBody(),true);
-         $this->validator->validate($request,[
-            "IDUSER"=>v::notEmpty(),
-            "IDTIPOUSER"=>v::notEmpty() 
-          ]); 
-
-        if($this->validator->failed())
-        {
-            $responseMessage = $this->validator->errors;
-            return $this->customResponse->is400Response($response,$responseMessage);
-        }
-
-        try{
-        $gtuserentry = GT_user::find($Id);
-        $gtuserentry->ID_USER         =   $data['IDUSER'];
-        $gtuserentry->ID_TIPO_USER    =   $data['IDTIPOUSER'];
-        $gtuserentry->save();
-        $responseMessage = array('msg' => "USUARIO editado correctamente",
-                                  'id'=>$Id);
-        return $this->customResponse->is200Response($response,$responseMessage);
-        }catch(Exception $err){
-        $responseMessage = array("err" => $err->getMessage());
-        return $this->customResponse->is400Response($response,$responseMessage);
-       }
-    }
-
 }

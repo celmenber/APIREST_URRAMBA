@@ -87,7 +87,6 @@ class AuthController
          "tbl_user_login.ESTADO",
          "tbl_user_login.AVATAR",
          "tbl_user_roll.NOMBRE as USER_ROL",
-         "tbl_user_roll.NOMBRE as USER_ROL",
          "tbl_asociacion_empleados.documentos AS emp_documento",
          "tbl_asociacion_empleados.nombres AS emp_nombres",
          "tbl_asociacion_empleados.apellidos AS emp_apellidos",

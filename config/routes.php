@@ -6,6 +6,7 @@ use App\Controllers\AsociacionController;
 use App\Controllers\ConcejocomunitarioController;
 use App\Controllers\GrupoFamiliarController;
 use App\Controllers\ViviendaController;
+use App\Controllers\CaracterizacionController;
 use App\Controllers\ParametricasController;
 
 return function (App $app)
@@ -24,6 +25,8 @@ return function (App $app)
          $app->get("/view-user/{Id}",[UserController::class,'viewUserId']);
          $app->post("/create-user",[UserController::class,'createUsers']);
          $app->put("/edit-user/{Id}",[UserController::class,'editUsers']);
+         $app->patch("/edit-userestado/{Id}",[UserController::class,'editUserEstado']);
+         $app->patch("/edit-usercambioclave/{Id}",[UserController::class,'userCambioClave']);
          $app->get("/view-user-roll",[UserController::class,'viewUserRoll']);
          $app->get("/view-user-roll/{Id}",[UserController::class,'viewUserRollid']);
        });
@@ -104,6 +107,14 @@ return function (App $app)
          $app->patch("/estado-vivienda/{Id}",[ViviendaController::class,'estadoVivienda']);
          $app->delete("/delete-vivienda/{Id}", [ViviendaController::class, "deleteVivienda"]);
       });
+
+      $app->group("/caratacterizacion",function($app)
+      {
+          $app->get("/view-caratacterizacion",[CaracterizacionController::class, 'viewCaracterizacion']);
+          $app->get("/view-caratacterizacion/{Id}",[CaracterizacionController::class,'viewCaracterizacionid']);
+          $app->post("/create-caratacterizacion",[CaracterizacionController::class,'createCaracterizacion']);
+          $app->delete("/delete-caratacterizacion/{Id}", [CaracterizacionController::class, "deleteCaracterizacion"]);
+      });   
 
        $app->group("/parametros",function($app)
       {
