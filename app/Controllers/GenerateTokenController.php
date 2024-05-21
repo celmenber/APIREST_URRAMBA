@@ -9,7 +9,7 @@ class GenerateTokenController implements SecretKeyInterface
     {
         
         $now = time();
-        $future = strtotime('+1 hour',$now);
+        $future = strtotime('+24 hour',$now);
         $secretKey = self::JWT_SECRET_KEY;
         $payload = [
          "jti"=>$users,

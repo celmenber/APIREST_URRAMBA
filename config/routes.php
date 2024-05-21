@@ -89,13 +89,14 @@ return function (App $app)
          $app->delete("/delete-jefehogar/{Id}", [GrupoFamiliarController::class, "deleteJefeHogar"]);
       });
 
-       $app->group("/nucleofamiiar",function($app)
+       $app->group("/nucleofamiliar",function($app)
       {
-         $app->get("/view-nucleofamiiar",[GrupoFamiliarController::class, 'viewNucleoFamiliar']);
-         $app->get("/view-nucleofamiiar/{Id}",[GrupoFamiliarController::class,'viewNucleoFamiliarId']);
-         $app->post("/create-nucleofamiiar",[GrupoFamiliarController::class,'createNucleoFamiliar']);
-         $app->put("/edit-nucleofamiiar/{Id}",[GrupoFamiliarController::class,'editarNucleoFamiliar']);
-         $app->delete("/delete-nucleofamiiar/{Id}", [GrupoFamiliarController::class, "deleteNucleoFamiliar"]);
+         $app->get("/view-nucleofamiliar",[GrupoFamiliarController::class, 'viewNucleoFamiliar']);
+         $app->get("/view-nucleofamiliar/{Id}",[GrupoFamiliarController::class,'viewNucleoFamiliarId']);
+         $app->post("/create-nucleofamiliar",[GrupoFamiliarController::class,'createNucleoFamiliar']);
+         $app->put("/edit-nucleofamiliar/{Id}",[GrupoFamiliarController::class,'editarNucleoFamiliar']);
+         $app->put("/traslado-nucleofamiliar/{Id}",[GrupoFamiliarController::class,'trasladoNucleoFamiliar']);
+         $app->delete("/delete-nucleofamiliar/{Id}", [GrupoFamiliarController::class, "deleteNucleoFamiliar"]);
       });
 
       $app->group("/vivienda",function($app)

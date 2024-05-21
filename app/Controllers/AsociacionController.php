@@ -139,6 +139,11 @@ public function consultaAsociacionEmpleado($Id){
                 ->leftjoin(
                         "tbl_veredas_barrios", 
                         "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+
+                 ->leftjoin(
+                        "tbl_user_login", 
+                        "tbl_asociacion_empleados.ID","=","tbl_user_login.ID_EMP") 
+
                 ->leftjoin(
                         "tbl_tipo_documento", 
                         "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
@@ -207,10 +212,7 @@ public function consultaAsociacionEmpleado($Id){
         $asociacionEntry->correo        =   $data['Correo'];
         $asociacionEntry->save();
 
-        $responseMessage = array(
-                        'msg'  => "Asociacion Guardada correctamente",
-                        'datos' => $this->consultaAsociacion($asociacionEntry->id),
-                        'id' => $asociacionEntry->id);
+        $responseMessage = array($this->consultaAsociacion($asociacionEntry->id));
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -273,7 +275,8 @@ public function consultaAsociacionEmpleado($Id){
             "tbl_asociacion.Nombre AS asociacion",
             "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios"
+            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+            "tbl_user_login.ID_EMP as id_Perfil"
          )->leftjoin(
                 "tbl_asociacion", 
                 "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
@@ -283,6 +286,9 @@ public function consultaAsociacionEmpleado($Id){
           ->leftjoin(
                 "tbl_veredas_barrios", 
                 "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
+
+          ->leftjoin("tbl_user_login", 
+                     "tbl_asociacion_empleados.ID","=","tbl_user_login.ID_EMP") 
           ->leftjoin(
                 "tbl_tipo_documento", 
                 "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")->get();
@@ -298,7 +304,10 @@ public function consultaAsociacionEmpleado($Id){
 
     public function deleteAsociacionEmpleado(Response $response,$Id)
     {
-        $this->asociacionEmpleadoEntry->where(["ID"=>$Id])->delete();
+         $this->asociacionEmpleadoEntry->where(["ID"=>$Id])->delete();
+
+         $this->userEntry->where(["ID_EMP"=>$Id])->delete();
+
         $responseMessage = "El Empleado Asociacion fue eliminada successfully";
         return $this->customResponse->is200Response($response,$responseMessage);
     }
@@ -309,7 +318,7 @@ public function consultaAsociacionEmpleado($Id){
        $this->validator->validate($request,[
             "Id_asociacion" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
-            "Id_tipo_documento" =>v::notEmpty(),
+            "Id_perfil" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
@@ -317,7 +326,6 @@ public function consultaAsociacionEmpleado($Id){
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
             "Estado" =>v::notOptional(),
-            "Fecha_ingreso" =>v::notEmpty(),
          ]); 
 
      if($this->validator->failed())
@@ -328,13 +336,13 @@ public function consultaAsociacionEmpleado($Id){
 
     $count = $this->verifyAccountDoc($data['Documentos']);
            if($count==true){
-             $responseMessage = "203-Información no autorizada Asociacion Empleado";
+             $responseMessage = "203-1-Información no autorizada Asociacion Empleado";
             return $this->customResponse->is203Response($response,$responseMessage);
            }
 
     $count = $this->verifyAccountUsuario($data['Correo']);
           if($count==true){
-             $responseMessage = "203-Información no autorizada Usuario Empleado";
+             $responseMessage = "203-2-Información no autorizada Usuario Empleado";
             return $this->customResponse->is203Response($response,$responseMessage);
            }
 
@@ -343,7 +351,6 @@ public function consultaAsociacionEmpleado($Id){
             $asociacionEmpleadoEntry = new AsociacionEmpleadoEntry;
             $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
             $asociacionEmpleadoEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
-            $asociacionEmpleadoEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
             $asociacionEmpleadoEntry->documentos          =   $data['Documentos'];
             $asociacionEmpleadoEntry->nombres             =   $data['Nombres'];
             $asociacionEmpleadoEntry->apellidos           =   $data['Apellidos'];
@@ -351,7 +358,6 @@ public function consultaAsociacionEmpleado($Id){
             $asociacionEmpleadoEntry->telefono            =   $data['Telefono'];
             $asociacionEmpleadoEntry->correo              =   $data['Correo'];
             $asociacionEmpleadoEntry->estado              =   $data['Estado'];
-            $asociacionEmpleadoEntry->fecha_ingreso       =   $data['Fecha_ingreso'];
             $asociacionEmpleadoEntry->save();
 
             $userEntry = new UserEntry;
@@ -359,13 +365,10 @@ public function consultaAsociacionEmpleado($Id){
             $userEntry->USERNAME    =   $data['Correo'];
             $userEntry->PASSWORD    =   $this->hashPassword($data['Documentos']);
             $userEntry->ESTADO      =   $data['Estado'];
-            $userEntry->ID_ROLL     =   2;
+            $userEntry->ID_ROLL     =   $data['Id_perfil'];
             $userEntry->save();
 
-            $responseMessage = array(
-                            'msg'  => "El empleado de la asociacion se guardo correctamente",
-                            'datos' =>  $this->consultaAsociacionEmpleado($asociacionEmpleadoEntry->id),
-                            'id' => $asociacionEmpleadoEntry->id);
+            $responseMessage = array($this->consultaAsociacionEmpleado($asociacionEmpleadoEntry->id));
 
             return $this->customResponse->is201Response($response,$responseMessage);
             }catch(Exception $err){
@@ -380,7 +383,6 @@ public function consultaAsociacionEmpleado($Id){
        $this->validator->validate($request,[
             "Id_asociacion" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
-            "Id_tipo_documento" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
@@ -388,7 +390,6 @@ public function consultaAsociacionEmpleado($Id){
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
             "Estado" =>v::notOptional(),
-            "Fecha_ingreso" =>v::notEmpty(),
          ]); 
 
      if($this->validator->failed())
@@ -407,14 +408,12 @@ public function consultaAsociacionEmpleado($Id){
            AsociacionEmpleadoEntry::where('ID', '=', $Id)->update([
             'id_asociacion'         =>   $data['Id_asociacion'],
             'id_barrio_vereda'      =>   $data['Id_barrio_vereda'],
-            'id_tipo_documento'     =>   $data['Id_tipo_documento'],
             'documentos'            =>   $data['Documentos'],
             'nombres'               =>   $data['Nombres'],
             'apellidos'             =>   $data['Apellidos'],
             'direccion'             =>   $data['Direccion'],
             'telefono'              =>   $data['Telefono'],
             'estado'                =>   $data['Estado'],
-            'fecha_ingreso'         =>   $data['Fecha_ingreso'],
            ]);
 
             $responseMessage = array(

@@ -55,14 +55,24 @@ class AuthController
 
         if($verifyAccount==false)
         {
-            $responseMessage = "invalid username";
+            $responseMessage = "100";
             return $this->customResponse->is400Response($response,$responseMessage);
         } 
 
 
-         if($verifyAccountPass==false)
+        if($verifyAccountPass==false)
         {
-            $responseMessage = "invalid password";
+            $responseMessage = "101";
+            return $this->customResponse->is400Response($response,$responseMessage);
+        }
+
+        $verifyEstadoAccount = $this->verifyEstadoAccount(
+            CustomRequestHandler::getParam($request,"users")
+        );
+
+       if($verifyEstadoAccount==false)
+        {
+            $responseMessage = "102";
             return $this->customResponse->is400Response($response,$responseMessage);
         }
 
@@ -120,6 +130,18 @@ class AuthController
         return true;
     }
 
+public function verifyEstadoAccount($users)
+    {
+       $User = $this->user->where(["USERNAME"=>$users])->first();
+
+     if($User->ESTADO == '0') 
+        {
+            return false;
+        }
+   
+        return true;  
+    }    
+
 public function verifyAccountPass($password,$users)
 {
          $hashedPassword ="";
@@ -140,4 +162,5 @@ public function verifyAccountPass($password,$users)
 
         return true;
     }
+
 }

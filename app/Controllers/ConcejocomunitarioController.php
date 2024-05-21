@@ -45,6 +45,17 @@ public function hashPassword($password)
     return password_hash($password,PASSWORD_DEFAULT);
 }  
 
+public function verifyAccountNit($Nit)
+{
+        $count = $this->concejocomunitarioEntry->where(["nit"=>$Nit])->count();
+            if($count == 0)
+            {
+                return false;
+            }
+
+return true;
+}
+
 public function verifyAccountUsuario($usuario)
 {
         $count = $this->userEntry->where(["USERNAME"=>$usuario])->count();
@@ -125,8 +136,8 @@ public function consultaConcejocomunitario($Id)
                 "tbl_autoridad_tradicional", 
                 "tbl_conncejos_comunitarios.id_autoridad_tradicional","=","tbl_autoridad_tradicional.ID")
           ->join(
-                "tbl_asociacion", 
-                "tbl_conncejos_comunitarios.id_asociacion","=","tbl_asociacion.ID")
+                 "tbl_asociacion", 
+                 "tbl_conncejos_comunitarios.id_asociacion","=","tbl_asociacion.ID")
          ->where("tbl_conncejos_comunitarios.ID","=",$Id)->first();
     return $data;
 }
@@ -226,6 +237,7 @@ public function consultaMiembrosConcejo($Id)
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
         	"Id_asociacion"=>v::notEmpty(),
+            "Id_usuario"=>v::notEmpty(),
             "Id_autoridad_tradicional"=>v::notEmpty(),
             "Id_municipio"=>v::notEmpty(),
             "Nit"=>v::notEmpty(),
@@ -237,20 +249,27 @@ public function consultaMiembrosConcejo($Id)
            $responseMessage = $this->validator->errors;
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
+
+       
+        $count = $this->verifyAccountNit($data['Nit']);
+        if($count==true){
+             $responseMessage = "203-Información no autorizada Asociacion";
+            return $this->customResponse->is203Response($response,$responseMessage);
+        }
+
         try{
             $concejocomunitarioEntry = new ConcejocomunitarioEntry;
         	$concejocomunitarioEntry->id_asociacion              =   $data['Id_asociacion'];
+            $concejocomunitarioEntry->id_usuario                 =   $data['Id_usuario'];
             $concejocomunitarioEntry->id_autoridad_tradicional   =   $data['Id_autoridad_tradicional'];
             $concejocomunitarioEntry->id_municipio               =   $data['Id_municipio']; 
             $concejocomunitarioEntry->Nit                        =   $data['Nit'];
             $concejocomunitarioEntry->Nombre_concejo_comunitario =   $data['Nombre_concejo_comunitario'];
             $concejocomunitarioEntry->save();
 
-            $responseMessage = array('msg' => "Asociacion Guardada correctamente",
-                                     'datos' =>  $this->consultaConcejocomunitario($concejocomunitarioEntry->id),
-                                     'id' => $concejocomunitarioEntry->id);
+            $responseMessage = array($this->consultaConcejocomunitario($concejocomunitarioEntry->id));
 
-        return $this->customResponse->is200Response($response,$responseMessage);
+        return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);
@@ -280,9 +299,7 @@ public function consultaMiembrosConcejo($Id)
             'nit'                        =>   $data['Nit'],
             'nombre_concejo_comunitario' =>   $data['Nombre_concejo_comunitario'],
             ]);
-            $responseMessage = array('msg' => "Asociacion Guardada correctamente",
-                                     'datos' =>  $this->consultaConcejocomunitario($Id),  
-                                     'id' => $Id);
+            $responseMessage = array($this->consultaConcejocomunitario($Id));
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -330,6 +347,9 @@ public function viewAutoridaTradicionalId(Response $response,$Id)
 public function deleteAutoridaTradicional(Response $response,$Id)
 {
         $this->autoridadtradicionalEntry->where(["ID"=>$Id])->delete();
+
+         $this->userEntry->where(["ID_AUT"=>$Id])->delete();
+
         $responseMessage = "La Autorida Tradicinal fue eliminada successfully";
         return $this->customResponse->is200Response($response,$responseMessage);
 }
@@ -339,13 +359,13 @@ public function deleteAutoridaTradicional(Response $response,$Id)
        $data = json_decode($request->getBody(),true);
        
        $this->validator->validate($request,[
-            "id_usuario" =>v::notEmpty(),
+            "Id_usuario" =>v::notEmpty(),
             "Id_municipio" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
-            "Id_escolaridad" =>v::notEmpty(),
-            "Estado_escolaridad" =>v::notEmpty(),
+           // "Id_escolaridad" =>v::notEmpty(),
+           // "Estado_escolaridad" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
@@ -383,8 +403,8 @@ public function deleteAutoridaTradicional(Response $response,$Id)
             $autoridadtradicionalEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
             $autoridadtradicionalEntry->id_corregimiento    =   $data['Id_corregimiento'];
             $autoridadtradicionalEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
-            $autoridadtradicionalEntry->id_escolaridad      =   $data['Id_escolaridad'];
-            $autoridadtradicionalEntry->estado_escolaridad  =   $data['Estado_escolaridad'];
+           // $autoridadtradicionalEntry->id_escolaridad      =   $data['Id_escolaridad'];
+           // $autoridadtradicionalEntry->estado_escolaridad  =   $data['Estado_escolaridad'];
             $autoridadtradicionalEntry->documentos          =   $data['Documentos'];
             $autoridadtradicionalEntry->nombres             =   $data['Nombres'];
             $autoridadtradicionalEntry->apellidos           =   $data['Apellidos'];
@@ -398,16 +418,14 @@ public function deleteAutoridaTradicional(Response $response,$Id)
             $autoridadtradicionalEntry->save();
 
             $userEntry = new UserEntry;
-            $userEntry->ID_EMP      =   $autoridadtradicionalEntry->id;
+            $userEntry->ID_AUT      =   $autoridadtradicionalEntry->id;
             $userEntry->USERNAME    =   $data['Correo'];
             $userEntry->PASSWORD    =   $this->hashPassword($data['Documentos']);
             $userEntry->ESTADO      =   $data['Estado'];
-            $userEntry->ID_ROLL     =   2;
+            $userEntry->ID_ROLL     =   3;
             $userEntry->save();
 
-            $responseMessage = array('msg'  => "La autoridad tradicional Guardada correctamente",
-                                    'datos' => $this->consultaAutoridaTradicional($autoridadtradicionalEntry->id),
-                                    'id'=> $autoridadtradicionalEntry->id);
+            $responseMessage = array($this->consultaAutoridaTradicional($autoridadtradicionalEntry->id));
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -419,13 +437,13 @@ public function deleteAutoridaTradicional(Response $response,$Id)
 public function editAutoridaTradicional(Request $request,Response $response,$Id)
  {
        $data = json_decode($request->getBody(),true);
-       $this->validator->validate($request,[
+        $this->validator->validate($request,[
             "Id_municipio" =>v::notEmpty(),
             "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
-            "Id_escolaridad" =>v::notEmpty(),
-            "Estado_escolaridad" =>v::notEmpty(),
+          //  "Id_escolaridad" =>v::notEmpty(),
+          //  "Estado_escolaridad" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
@@ -436,7 +454,7 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
             "Estado" =>v::notOptional(),
             "Fecha_nacimiento" =>v::notEmpty(),
             "Fecha_ingreso" =>v::notEmpty(),
-         ]); 
+         ]);
 
      if($this->validator->failed())
        {
@@ -456,8 +474,8 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
             'id_barrio_vereda'    =>   $data['Id_barrio_vereda'],
             'id_corregimiento'    =>   $data['Id_corregimiento'],
             'id_tipo_documento'   =>   $data['Id_tipo_documento'],
-            'id_escolaridad'      =>   $data['Id_escolaridad'],
-            'estado_escolaridad'  =>   $data['Estado_escolaridad'],
+          //  'id_escolaridad'      =>   $data['Id_escolaridad'],
+         //   'estado_escolaridad'  =>   $data['Estado_escolaridad'],
             'documentos'          =>   $data['Documentos'],
             'nombres'             =>   $data['Nombres'],
             'apellidos'           =>   $data['Apellidos'],
@@ -470,9 +488,7 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
             'fecha_ingreso'       =>   $data['Fecha_ingreso'],
             ]);
 
-            $responseMessage = array('msg' => "La autoridad tradicional editada correctamente",
-                                     'datos' => $this->consultaAutoridaTradicional($Id),
-                                     'id' => $Id);
+            $responseMessage = array( $this->consultaAutoridaTradicional($Id));
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -518,7 +534,9 @@ public function estadoAutoridaTradiciona(Request $request,Response $response,$Id
             "tbl_concejos_miembros.*",
             "tbl_tipo_documento.Nombre as Tipo_documento",
             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento"
+            "tbl_corregimiento.Nombre as Corregimiento",
+            "tbl_escolaridad.Nombre as Escolaridad",
+            "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
          )->join(
                 "tbl_veredas_barrios", 
                 "tbl_concejos_miembros.id_barrio_vereda","=","tbl_veredas_barrios.ID")
@@ -527,7 +545,15 @@ public function estadoAutoridaTradiciona(Request $request,Response $response,$Id
                 "tbl_concejos_miembros.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
                 "tbl_tipo_documento", 
-                "tbl_concejos_miembros.id_tipo_documento","=","tbl_tipo_documento.ID")->get();
+                "tbl_concejos_miembros.id_tipo_documento","=","tbl_tipo_documento.ID")
+           ->join(
+                "tbl_escolaridad", 
+                "tbl_concejos_miembros.id_escolaridad","=","tbl_escolaridad.ID")
+          ->join(
+                "tbl_orientacion_sexual", 
+                "tbl_concejos_miembros.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")
+          ->get();
+
         return $this->customResponse->is200Response($response,$ConcejosmiembrosEntry);
     }
      
@@ -558,6 +584,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
+            "Cargo_miembro" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
             "Genero" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
@@ -593,20 +620,18 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             $concejosmiembrosEntry->documentos              =   $data['Documentos'];
             $concejosmiembrosEntry->nombres                 =   $data['Nombres'];
             $concejosmiembrosEntry->apellidos               =   $data['Apellidos'];
+            $concejosmiembrosEntry->cargo_miembro           =   $data['Cargo_miembro'];
             $concejosmiembrosEntry->sexo                    =   $data['Sexo'];
             $concejosmiembrosEntry->genero                  =   $data['Genero'];
             $concejosmiembrosEntry->direccion               =   $data['Direccion'];
             $concejosmiembrosEntry->telefono                =   $data['Telefono'];
-            $concejosmiembrosEntry->correo                   =   $data['Correo'];
+            $concejosmiembrosEntry->correo                  =   $data['Correo'];
             $concejosmiembrosEntry->estado                  =   $data['Estado'];
             $concejosmiembrosEntry->fecha_nacimiento        =   $data['Fecha_nacimiento'];
             $concejosmiembrosEntry->fecha_ingreso           =   $data['Fecha_ingreso'];
             $concejosmiembrosEntry->save();
 
-            $responseMessage = array(
-                            'msg'  => "Los Miembros Concejo Guardado correctamente",
-                            'datos' => $this->consultaMiembrosConcejo($concejosmiembrosEntry->id),
-                            'id' => $concejosmiembrosEntry->id);
+            $responseMessage = array($this->consultaMiembrosConcejo($concejosmiembrosEntry->id));
 
         return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
@@ -629,6 +654,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
+            "Cargo_miembro" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
             "Genero" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
@@ -645,11 +671,11 @@ public function deleteMiembrosConcejo(Response $response,$Id)
            return $this->customResponse->is400Response($response,$responseMessage);
        } 
      $count = $this->verifyAccountDocMiembroEdit($data['Documentos'], $Id);
-     if($count==true)
-       {
-              $responseMessage = "203-Información no autorizada Miembros Concejo";
-            return $this->customResponse->is203Response($response,$responseMessage);
-       }
+                if($count==true)
+                {
+                        $responseMessage = "203-Información no autorizada Miembros Concejo";
+                        return $this->customResponse->is203Response($response,$responseMessage);
+                }
        
         try{
                      ConcejosmiembrosEntry::where('ID', '=', $Id)->update([
@@ -663,6 +689,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
                         'documentos'               =>   $data['Documentos'],
                         'nombres'                  =>   $data['Nombres'],
                         'apellidos'                =>   $data['Apellidos'],
+                        'cargo_miembro'            =>   $data['Cargo_miembro'],
                         'sexo'                     =>   $data['Sexo'],
                         'genero'                   =>   $data['Genero'],
                         'direccion'                =>   $data['Direccion'], 
@@ -673,9 +700,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
                         'fecha_ingreso'            =>   $data['Fecha_ingreso'],
                         ]);
 
-             $responseMessage = array('msg' => "Los Miembros Concejo editado correctamente",
-                                      'datos' => $this->consultaMiembrosConcejo($Id),
-                                      'id' => $Id);       
+             $responseMessage = array($this->consultaMiembrosConcejo($Id));       
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
