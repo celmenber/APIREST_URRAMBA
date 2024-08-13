@@ -19,6 +19,8 @@ $app->add(new BasePathMiddleware($app));
 
 $middleware = require_once __DIR__ . '/middleware.php'; $middleware($app);
 
+//$app->setBasePath('/servicio');
+
 // Add Slim routing middleware
 $app->addBodyParsingMiddleware();
 
