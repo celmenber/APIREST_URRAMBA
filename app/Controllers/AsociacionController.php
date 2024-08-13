@@ -129,21 +129,15 @@ public function consultaAsociacionEmpleado($Id){
                     "tbl_asociacion.Nombre AS asociacion",
                     "tbl_municipio.Nombre AS municipio",
                     "tbl_tipo_documento.Nombre as Tipo_documento",
-                    "tbl_veredas_barrios.Nombre as Veredas_Barrios"
                 )->leftjoin(
                         "tbl_asociacion", 
                         "tbl_asociacion_empleados.id_asociacion","=","tbl_asociacion.ID")
                 ->leftjoin(
                         "tbl_municipio", 
                         "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-                ->leftjoin(
-                        "tbl_veredas_barrios", 
-                        "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-
                  ->leftjoin(
                         "tbl_user_login", 
                         "tbl_asociacion_empleados.ID","=","tbl_user_login.ID_EMP") 
-
                 ->leftjoin(
                         "tbl_tipo_documento", 
                         "tbl_asociacion_empleados.id_tipo_documento","=","tbl_tipo_documento.ID")
@@ -275,7 +269,6 @@ public function consultaAsociacionEmpleado($Id){
             "tbl_asociacion.Nombre AS asociacion",
             "tbl_municipio.Nombre AS municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
             "tbl_user_login.ID_EMP as id_Perfil"
          )->leftjoin(
                 "tbl_asociacion", 
@@ -283,10 +276,6 @@ public function consultaAsociacionEmpleado($Id){
          ->leftjoin(
                 "tbl_municipio", 
                 "tbl_asociacion.Id_municipio","=","tbl_municipio.ID")
-          ->leftjoin(
-                "tbl_veredas_barrios", 
-                "tbl_asociacion_empleados.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-
           ->leftjoin("tbl_user_login", 
                      "tbl_asociacion_empleados.ID","=","tbl_user_login.ID_EMP") 
           ->leftjoin(
@@ -317,11 +306,11 @@ public function consultaAsociacionEmpleado($Id){
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_asociacion" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_perfil" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -350,10 +339,10 @@ public function consultaAsociacionEmpleado($Id){
         try{
             $asociacionEmpleadoEntry = new AsociacionEmpleadoEntry;
             $asociacionEmpleadoEntry->id_asociacion       =   $data['Id_asociacion'];
-            $asociacionEmpleadoEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
             $asociacionEmpleadoEntry->documentos          =   $data['Documentos'];
             $asociacionEmpleadoEntry->nombres             =   $data['Nombres'];
             $asociacionEmpleadoEntry->apellidos           =   $data['Apellidos'];
+            $asociacionEmpleadoEntry->barrio_vereda       =   $data['Barrio_vereda'];
             $asociacionEmpleadoEntry->direccion           =   $data['Direccion'];
             $asociacionEmpleadoEntry->telefono            =   $data['Telefono'];
             $asociacionEmpleadoEntry->correo              =   $data['Correo'];
@@ -382,10 +371,10 @@ public function consultaAsociacionEmpleado($Id){
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_asociacion" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -407,7 +396,7 @@ public function consultaAsociacionEmpleado($Id){
         try{
            AsociacionEmpleadoEntry::where('ID', '=', $Id)->update([
             'id_asociacion'         =>   $data['Id_asociacion'],
-            'id_barrio_vereda'      =>   $data['Id_barrio_vereda'],
+            'barrio_vereda'         =>   $data['Barrio_vereda'],
             'documentos'            =>   $data['Documentos'],
             'nombres'               =>   $data['Nombres'],
             'apellidos'             =>   $data['Apellidos'],

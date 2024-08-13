@@ -92,6 +92,8 @@ class AuthController
     $guestEntries = LoginEntry::select(
          "tbl_user_login.ID_USER", 
          "tbl_user_login.ID_ROLL",
+         "tbl_user_login.ID_AUT",
+         "tbl_user_login.ID_EMP",
          "tbl_user_login.USERNAME",
          "tbl_user_login.NOMBRES",
          "tbl_user_login.ESTADO",

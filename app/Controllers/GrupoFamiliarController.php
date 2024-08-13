@@ -84,56 +84,19 @@ public function verifyAccountDocNucleoFamiliaedit($Document,$Id)
 }
      /* DESDE AQUI SE PROCESAN CONSULTAS JEFE DE HOGAR */
 
-public function consultaJefeHogarCed($param)
+public function consultaJefeHogar()
 {
  $data = jefeHogarEntry::select(
             "tbl_jefe_hogar.*",
             "tbl_conncejos_comunitarios.Nombre_concejo_comunitario as Concejo_Comunitario",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento",
-            "tbl_escolaridad.Nombre as Escolaridad",
-             "tbl_orientacion_sexual.Nombre as Orientacion_sexual"
-         )->join(
-                "tbl_conncejos_comunitarios", 
-                "tbl_jefe_hogar.id_concejo_comunitario","=","tbl_conncejos_comunitarios.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_jefe_hogar.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
-                "tbl_corregimiento", 
-                "tbl_jefe_hogar.id_corregimiento","=","tbl_corregimiento.ID")
-          ->join(
-                "tbl_tipo_documento", 
-                "tbl_jefe_hogar.id_tipo_documento","=","tbl_tipo_documento.ID")
-          ->join(
-                "tbl_escolaridad", 
-                "tbl_jefe_hogar.id_escolaridad","=","tbl_escolaridad.ID")
-          ->join(
-                "tbl_orientacion_sexual", 
-                "tbl_jefe_hogar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")      
-          
-           ->where("tbl_jefe_hogar.documentos","like",'%'.$param.'%')->get();
-
-        return $data;
-}
-
-public function consultaJefeHogar($Id)
-{
- $data = jefeHogarEntry::select(
-            "tbl_jefe_hogar.*",
-            "tbl_conncejos_comunitarios.Nombre_concejo_comunitario as Concejo_Comunitario",
-            "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
+            "tbl_tipo_documento.Codigo as Codigo",
             "tbl_corregimiento.Nombre as Corregimiento",
             "tbl_escolaridad.Nombre as Escolaridad",
             "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
-         )->join(
+         )->leftJoin(
                 "tbl_conncejos_comunitarios", 
                 "tbl_jefe_hogar.id_concejo_comunitario","=","tbl_conncejos_comunitarios.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_jefe_hogar.id_barrio_vereda","=","tbl_veredas_barrios.ID")
           ->join(
                 "tbl_corregimiento", 
                 "tbl_jefe_hogar.id_corregimiento","=","tbl_corregimiento.ID")
@@ -145,8 +108,7 @@ public function consultaJefeHogar($Id)
                 "tbl_jefe_hogar.id_escolaridad","=","tbl_escolaridad.ID")
           ->join(
                 "tbl_orientacion_sexual", 
-                "tbl_jefe_hogar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")  
-         ->where("tbl_jefe_hogar.ID","=",$Id)->first(); 
+                "tbl_jefe_hogar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID"); 
 
         return $data;
 
@@ -159,6 +121,7 @@ public function consultaNucleFamiliar()
                         "tbl_jefe_hogar.ID as ID_jefehogar",
                         "tbl_parentesco.Nombre as Parentesco",
                         "tbl_tipo_documento.Nombre as Tipo_documento",
+                        "tbl_tipo_documento.Codigo as Codigo",
                         "tbl_escolaridad.Nombre as Escolaridad",
                         "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
                   )->join(
@@ -175,82 +138,37 @@ public function consultaNucleFamiliar()
                         "tbl_nucleo_familiar.id_escolaridad","=","tbl_escolaridad.ID")
                   ->join(
                         "tbl_orientacion_sexual", 
-                        "tbl_nucleo_familiar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")      
-                  ->get();
+                        "tbl_nucleo_familiar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID");
         return  $data; 
     }
 
-public function consultaNucleFamiliarId($Id)
+/* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA JEFE DE HOGAR */
+public function viewJefeHogar(Response $response)
 {
- $data = nucleoFamiliarEntry::select(
-            "tbl_nucleo_familiar.*",
-            "tbl_jefe_hogar.ID as ID_jefehogar",
-            "tbl_parentesco.Nombre as Parentesco",
-            "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_escolaridad.Nombre as Escolaridad",
-            "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
-         )->join(
-                "tbl_jefe_hogar", 
-                "tbl_nucleo_familiar.id_jefe_hogar","=","tbl_jefe_hogar.ID")
-          ->join(
-                "tbl_parentesco", 
-                "tbl_nucleo_familiar.id_parentesco","=","tbl_parentesco.ID")
-          ->join(
-                "tbl_tipo_documento", 
-                "tbl_nucleo_familiar.id_tipo_documento","=","tbl_tipo_documento.ID")
-          ->join(
-                "tbl_escolaridad", 
-                "tbl_nucleo_familiar.id_escolaridad","=","tbl_escolaridad.ID")
-          ->join(
-                "tbl_orientacion_sexual", 
-                "tbl_nucleo_familiar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")      
-          ->where("tbl_nucleo_familiar.ID","=",$Id)->first();
-return $data;
-}
-
-      /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA JEFE DE HOGAR */
-    public function viewJefeHogar(Response $response)
-    {
-           $JefeHogarEntry = jefeHogarEntry::select(
-            "tbl_jefe_hogar.*",
-            "tbl_conncejos_comunitarios.Nombre_concejo_comunitario as Concejo_Comunitario",
-            "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
-            "tbl_corregimiento.Nombre as Corregimiento",
-            "tbl_escolaridad.Nombre as Escolaridad",
-            "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
-         )->join(
-                "tbl_conncejos_comunitarios", 
-                "tbl_jefe_hogar.id_concejo_comunitario","=","tbl_conncejos_comunitarios.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_jefe_hogar.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
-                "tbl_corregimiento", 
-                "tbl_jefe_hogar.id_corregimiento","=","tbl_corregimiento.ID")
-          ->join(
-                "tbl_tipo_documento", 
-                "tbl_jefe_hogar.id_tipo_documento","=","tbl_tipo_documento.ID")
-          ->join(
-                "tbl_escolaridad", 
-                "tbl_jefe_hogar.id_escolaridad","=","tbl_escolaridad.ID")
-           ->join(
-                "tbl_orientacion_sexual", 
-                "tbl_jefe_hogar.id_orientacion_sexual","=","tbl_orientacion_sexual.ID")      
-            ->get();
-
-        return $this->customResponse->is200Response($response,$JefeHogarEntry); 
+        $JefeHogarEntry = $this->consultaJefeHogar()->get(); 
+      return $this->customResponse->is200Response($response,$JefeHogarEntry); 
 }
 
 public function viewJefeHogarId(Response $response,$Id)
 {
-        $JefeHogarEntry = $this->consultaJefeHogar($Id);
+        $JefeHogarEntry = $this->consultaJefeHogar()
+                               ->where("tbl_jefe_hogar.ID","=",$Id)
+                               ->first();
+
         return $this->customResponse->is200Response($response,$JefeHogarEntry);
 }
 
-public function viewJefeHogarDocuments(Response $response,$Doc)
+public function viewJefeHogarDocuments(Request $request,Response $response)
 {
-        $JefeHogarEntry = $this->consultaJefeHogarCed($Doc);
+    $dato = json_decode($request->getBody(),true);
+                $this->validator->validate($request,[
+                     "Parametros" =>v::notEmpty(),
+                   ]);
+        $JefeHogarEntry = $this->consultaJefeHogar()
+                                ->where("tbl_jefe_hogar.documentos","like",'%'.$dato["Parametros"].'%')
+                                ->orWhere("tbl_jefe_hogar.nombres","LIKE",'%'.$dato["Parametros"].'%')
+                                ->orWhere("tbl_jefe_hogar.apellidos","LIKE",'%'.$dato["Parametros"].'%')
+                                ->get();
         return $this->customResponse->is200Response($response,$JefeHogarEntry);
 }
 
@@ -265,9 +183,7 @@ public function createJefeHogar(Request $request,Response $response)
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_concejo_comunitario" =>v::notEmpty(),
-            //"Id_municipio" =>v::notEmpty(),
             "Id_usuario" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),           
             "Id_escolaridad" =>v::notEmpty(),
@@ -278,6 +194,7 @@ public function createJefeHogar(Request $request,Response $response)
             "Estado_escolaridad" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
             "Genero" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -308,8 +225,6 @@ public function createJefeHogar(Request $request,Response $response)
         $jefeHogarEntry = new JefeHogarEntry;
         $jefeHogarEntry->id_concejo_comunitario  = $data['Id_concejo_comunitario'];
         $jefeHogarEntry->id_usuario              = $data['Id_usuario'];
-       // $jefeHogarEntry->id_municipio            = $data['Id_municipio'];
-        $jefeHogarEntry->id_barrio_vereda        = $data['Id_barrio_vereda'];
         $jefeHogarEntry->id_corregimiento        = $data['Id_corregimiento'];
         $jefeHogarEntry->id_tipo_documento       = $data['Id_tipo_documento'];
         $jefeHogarEntry->id_escolaridad          = $data['Id_escolaridad'];
@@ -320,6 +235,7 @@ public function createJefeHogar(Request $request,Response $response)
         $jefeHogarEntry->estado_escolaridad      = $data['Estado_escolaridad'];
         $jefeHogarEntry->sexo                    = $data['Sexo'];
         $jefeHogarEntry->genero                  = $data['Genero'];
+        $jefeHogarEntry->barrio_vereda           = $data['Barrio_vereda'];
         $jefeHogarEntry->direccion               = $data['Direccion'];
         $jefeHogarEntry->telefono                = $data['Telefono'];
         $jefeHogarEntry->correo                  = $data['Correo'];
@@ -328,7 +244,9 @@ public function createJefeHogar(Request $request,Response $response)
         $jefeHogarEntry->fecha_ingreso           = $data['Fecha_ingreso'];
         $jefeHogarEntry->save();
 
-        $responseMessage = array($this->consultaJefeHogar($jefeHogarEntry->id));
+        $responseMessage = array($this->consultaJefeHogar() 
+                               ->where("tbl_jefe_hogar.ID","=",$jefeHogarEntry->id)
+                               ->first());
 
         return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
@@ -343,7 +261,6 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
        $data = json_decode($request->getBody(),true);
        $this->validator->validate($request,[
             "Id_concejo_comunitario" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),           
             "Id_escolaridad" =>v::notEmpty(),
@@ -354,6 +271,7 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
             "Estado_escolaridad" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
             "Genero" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -383,7 +301,6 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
         try{
          JefeHogarEntry::where('ID', '=', $Id)->update([
                   'id_concejo_comunitario'  => $data['Id_concejo_comunitario'],
-                  'id_barrio_vereda'        => $data['Id_barrio_vereda'],
                   'id_corregimiento'        => $data['Id_corregimiento'],
                   'id_tipo_documento'       => $data['Id_tipo_documento'],
                   'id_escolaridad'          => $data['Id_escolaridad'],
@@ -394,6 +311,7 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
                   'estado_escolaridad'      => $data['Estado_escolaridad'],
                   'sexo'                    => $data['Sexo'],
                   'genero'                  => $data['Genero'],
+                  'barrio_vereda'           => $data['Barrio_vereda'],
                   'direccion'               => $data['Direccion'],
                   'telefono'                => $data['Telefono'],
                   'correo'                  => $data['Correo'],
@@ -402,7 +320,9 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
                   'fecha_ingreso'           => $data['Fecha_ingreso'],
           ]);
 
-        $responseMessage = array($this->consultaJefeHogar($Id));
+        $responseMessage = array($this->consultaJefeHogar() 
+                               ->where("tbl_jefe_hogar.ID","=",$Id)
+                               ->first());
 
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
@@ -410,6 +330,34 @@ public function editarJefeHogar(Request $request,Response $response,$Id)
         return $this->customResponse->is400Response($response,$responseMessage);
        }
    }
+
+public function trasladoJefeHogar(Request $request,Response $response,$Id)
+  {
+   $data = json_decode($request->getBody(),true);
+
+      if($this->validator->failed())
+       {
+           $responseMessage = $this->validator->errors;
+           return $this->customResponse->is400Response($response,$responseMessage);
+       } 
+
+        try{
+            JefeHogarEntry::where('ID', '=', $Id)->update([
+                                  'id_concejo_comunitario' => $data['Chk'] == 0 ? $data['Id_Concejo'] : 0,
+                                  'id_usuario' => $data['Id_usuario'],
+                                  'estado' => $data['Chk'] == 0 ? 1 : 0,
+                               ]);
+
+         $responseMessage = array($this->consultaJefeHogar() 
+                               ->where("tbl_jefe_hogar.ID","=",$Id)
+                               ->first());
+
+        return $this->customResponse->is200Response($response,$responseMessage);
+        }catch(Exception $err){
+        $responseMessage = array("err" => $err->getMessage());
+        return $this->customResponse->is400Response($response,$responseMessage);
+       }
+  }   
 
 public function estadoJefeHogar(Request $request,Response $response, $Id)
   {
@@ -440,12 +388,14 @@ public function estadoJefeHogar(Request $request,Response $response, $Id)
        /* DESDE AQUI SE PROCESO EL CRUE DE LA TABLA NUCLEO FAMIIAR */
 public function viewNucleoFamiliar(Response $response)
     {
-        $getNucleoFamiliar = $this-> consultaNucleFamiliar();
+        $getNucleoFamiliar = $this-> consultaNucleFamiliar()->get();
         return $this->customResponse->is200Response($response,$getNucleoFamiliar); 
     }
  public function viewNucleoFamiliarId(Response $response,$Id)
 {
-        $getNucleoFamiliar = $this-> consultaNucleFamiliarId($Id);
+        $getNucleoFamiliar = $this-> consultaNucleFamiliar()
+                                  ->where("tbl_nucleo_familiar.ID","=",$Id)
+                                  ->first();
         return $this->customResponse->is200Response($response,$getNucleoFamiliar);
 }
 public function deleteNucleoFamiliar(Response $response,$Id)
@@ -507,7 +457,9 @@ public function createNucleoFamiliar(Request $request,Response $response)
         $nucleoFamiliarEntry->fecha_nacimiento        = $data['Fecha_nacimiento'];
         $nucleoFamiliarEntry->save();
 
-        $responseMessage = array($this->consultaNucleFamiliarId($nucleoFamiliarEntry->id));
+        $responseMessage = array($this->consultaNucleFamiliar()          
+                                      ->where("tbl_nucleo_familiar.ID","=",$nucleoFamiliarEntry->id)
+                                      ->first());
         return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
@@ -566,7 +518,9 @@ public function createNucleoFamiliar(Request $request,Response $response)
                               'fecha_nacimiento'      => $data['Fecha_nacimiento'],
          ]);
 
-        $responseMessage = array($this->consultaNucleFamiliarId($Id));
+        $responseMessage = array($this->consultaNucleFamiliar()          
+                                      ->where("tbl_nucleo_familiar.ID","=",$Id)
+                                      ->first());
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
@@ -587,13 +541,39 @@ public function createNucleoFamiliar(Request $request,Response $response)
                                   'id_jefe_hogar' => $data['Id_jefe_hogar'],
                                ]);
 
-        $responseMessage = array($this->consultaNucleFamiliar());
+        $responseMessage = array($this->consultaNucleFamiliar()          
+                                      ->where("tbl_nucleo_familiar.ID","=",$Id)
+                                      ->first());
         return $this->customResponse->is200Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);
        }
   }
+
+  public function estadoJNucleoFamiliar(Request $request,Response $response, $Id)
+    {
+     $data = json_decode($request->getBody(),true);
+         if($this->validator->failed())
+            {
+                  $responseMessage = $this->validator->errors;
+                  return $this->customResponse->is400Response($response,$responseMessage);
+            } 
+
+                try{
+                    NucleoFamiliarEntry::where('ID', '=', $Id)->update([
+                                    'Estado' => $data['ESTADO'],
+                    ]);
+
+                    $responseMessage = array($this->consultaNucleFamiliar()          
+                                      ->where("tbl_nucleo_familiar.ID","=",$Id)
+                                      ->first());
+                 return $this->customResponse->is200Response($response,$responseMessage);
+                }catch(Exception $err){
+                $responseMessage = array("err" => $err->getMessage());
+                return $this->customResponse->is400Response($response,$responseMessage);
+            }
+      }
 
 }
 

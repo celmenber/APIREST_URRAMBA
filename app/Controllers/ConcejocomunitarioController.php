@@ -146,14 +146,10 @@ public function consultaMiembrosConcejo($Id)
   $data = concejosmiembrosEntry::select(
              "tbl_concejos_miembros.*",
              "tbl_tipo_documento.Nombre as Tipo_documento",
-             "tbl_veredas_barrios.Nombre as Veredas_Barrios",
              "tbl_corregimiento.Nombre as Corregimiento",
              "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
              "tbl_escolaridad.Nombre as Escolaridad"
          )->join(
-                "tbl_veredas_barrios", 
-                "tbl_concejos_miembros.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
                 "tbl_corregimiento", 
                 "tbl_concejos_miembros.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
@@ -175,24 +171,16 @@ public function consultaMiembrosConcejo($Id)
             "tbl_autoridad_tradicional.*",
             "tbl_municipio.Nombre as Municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
             "tbl_corregimiento.Nombre as Corregimiento",
-            "tbl_escolaridad.Nombre as Escolaridad"
          )->join(
                 "tbl_municipio", 
                 "tbl_autoridad_tradicional.Id_municipio","=","tbl_municipio.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
           ->join(
                 "tbl_corregimiento", 
                 "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
          ->join(
                 "tbl_tipo_documento", 
                 "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
-         ->join(
-                "tbl_escolaridad", 
-                "tbl_autoridad_tradicional.id_escolaridad","=","tbl_escolaridad.ID")
          ->where("tbl_autoridad_tradicional.ID","=",$Id)->first();
       return $data;
 }
@@ -316,24 +304,16 @@ public function consultaMiembrosConcejo($Id)
             "tbl_autoridad_tradicional.*",
             "tbl_municipio.Nombre as Municipio",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
             "tbl_corregimiento.Nombre as Corregimiento",
-            "tbl_escolaridad.Nombre as Escolaridad"
          )->join(
                 "tbl_municipio", 
                 "tbl_autoridad_tradicional.Id_municipio","=","tbl_municipio.ID")
-          ->join(
-                "tbl_veredas_barrios", 
-                "tbl_autoridad_tradicional.id_barrio_vereda","=","tbl_veredas_barrios.ID")
           ->join(
                 "tbl_corregimiento", 
                 "tbl_autoridad_tradicional.id_corregimiento","=","tbl_corregimiento.ID")
          ->join(
                 "tbl_tipo_documento", 
                 "tbl_autoridad_tradicional.id_tipo_documento","=","tbl_tipo_documento.ID")   
-         ->join(
-                "tbl_escolaridad", 
-                "tbl_autoridad_tradicional.id_escolaridad","=","tbl_escolaridad.ID")
          ->get();
         return $this->customResponse->is200Response($response,$AutoridadtradicionalEntry);
     }
@@ -361,15 +341,13 @@ public function deleteAutoridaTradicional(Response $response,$Id)
        $this->validator->validate($request,[
             "Id_usuario" =>v::notEmpty(),
             "Id_municipio" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
-           // "Id_escolaridad" =>v::notEmpty(),
-           // "Estado_escolaridad" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -400,14 +378,12 @@ public function deleteAutoridaTradicional(Response $response,$Id)
             $autoridadtradicionalEntry = new AutoridadtradicionalEntry;
             $autoridadtradicionalEntry->id_usuario          =   $data['Id_usuario'];
             $autoridadtradicionalEntry->id_municipio        =   $data['Id_municipio'];
-            $autoridadtradicionalEntry->id_barrio_vereda    =   $data['Id_barrio_vereda'];
             $autoridadtradicionalEntry->id_corregimiento    =   $data['Id_corregimiento'];
             $autoridadtradicionalEntry->id_tipo_documento   =   $data['Id_tipo_documento'];
-           // $autoridadtradicionalEntry->id_escolaridad      =   $data['Id_escolaridad'];
-           // $autoridadtradicionalEntry->estado_escolaridad  =   $data['Estado_escolaridad'];
             $autoridadtradicionalEntry->documentos          =   $data['Documentos'];
             $autoridadtradicionalEntry->nombres             =   $data['Nombres'];
             $autoridadtradicionalEntry->apellidos           =   $data['Apellidos'];
+            $autoridadtradicionalEntry->barrio_vereda       =   $data['Barrio_vereda'];
             $autoridadtradicionalEntry->sexo                =   $data['Sexo'];
             $autoridadtradicionalEntry->direccion           =   $data['Direccion'];
             $autoridadtradicionalEntry->telefono            =   $data['Telefono'];
@@ -427,7 +403,7 @@ public function deleteAutoridaTradicional(Response $response,$Id)
 
             $responseMessage = array($this->consultaAutoridaTradicional($autoridadtradicionalEntry->id));
 
-        return $this->customResponse->is200Response($response,$responseMessage);
+        return $this->customResponse->is201Response($response,$responseMessage);
         }catch(Exception $err){
         $responseMessage = array("err" => $err->getMessage());
         return $this->customResponse->is400Response($response,$responseMessage);
@@ -439,15 +415,13 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
        $data = json_decode($request->getBody(),true);
         $this->validator->validate($request,[
             "Id_municipio" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
-          //  "Id_escolaridad" =>v::notEmpty(),
-          //  "Estado_escolaridad" =>v::notEmpty(),
             "Documentos" =>v::notEmpty(),
             "Nombres" =>v::notEmpty(),
             "Apellidos" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -471,14 +445,12 @@ public function editAutoridaTradicional(Request $request,Response $response,$Id)
         try{
          AutoridadtradicionalEntry::where('ID', '=', $Id)->update([
             'id_municipio'        =>   $data['Id_municipio'],
-            'id_barrio_vereda'    =>   $data['Id_barrio_vereda'],
             'id_corregimiento'    =>   $data['Id_corregimiento'],
             'id_tipo_documento'   =>   $data['Id_tipo_documento'],
-          //  'id_escolaridad'      =>   $data['Id_escolaridad'],
-         //   'estado_escolaridad'  =>   $data['Estado_escolaridad'],
             'documentos'          =>   $data['Documentos'],
             'nombres'             =>   $data['Nombres'],
             'apellidos'           =>   $data['Apellidos'],
+            'barrio_vereda'       =>   $data['Barrio_vereda'],
             'sexo'                =>   $data['Sexo'],
             'direccion'           =>   $data['Direccion'],
             'telefono'            =>   $data['Telefono'],
@@ -533,14 +505,10 @@ public function estadoAutoridaTradiciona(Request $request,Response $response,$Id
         $ConcejosmiembrosEntry = concejosmiembrosEntry::select(
             "tbl_concejos_miembros.*",
             "tbl_tipo_documento.Nombre as Tipo_documento",
-            "tbl_veredas_barrios.Nombre as Veredas_Barrios",
             "tbl_corregimiento.Nombre as Corregimiento",
             "tbl_escolaridad.Nombre as Escolaridad",
             "tbl_orientacion_sexual.Nombre as Orientacion_sexual",
          )->join(
-                "tbl_veredas_barrios", 
-                "tbl_concejos_miembros.id_barrio_vereda","=","tbl_veredas_barrios.ID")
-          ->join(
                 "tbl_corregimiento", 
                 "tbl_concejos_miembros.id_corregimiento","=","tbl_corregimiento.ID")
           ->join(
@@ -575,7 +543,6 @@ public function deleteMiembrosConcejo(Response $response,$Id)
        $this->validator->validate($request,[
             "Id_conncejo_comunitario" =>v::notEmpty(),
             "Id_usuario" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
             "Id_orientacion_sexual" =>v::notEmpty(),
@@ -587,6 +554,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             "Cargo_miembro" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
             "Genero" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
@@ -611,7 +579,6 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             $concejosmiembrosEntry = new ConcejosmiembrosEntry;
             $concejosmiembrosEntry->id_conncejo_comunitario =   $data['Id_conncejo_comunitario'];
             $concejosmiembrosEntry->id_usuario              =   $data['Id_usuario'];
-            $concejosmiembrosEntry->id_barrio_vereda        =   $data['Id_barrio_vereda'];
             $concejosmiembrosEntry->id_corregimiento        =   $data['Id_corregimiento'];
             $concejosmiembrosEntry->id_tipo_documento       =   $data['Id_tipo_documento'];
             $concejosmiembrosEntry->id_orientacion_sexual   =   $data['Id_orientacion_sexual'];
@@ -623,6 +590,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             $concejosmiembrosEntry->cargo_miembro           =   $data['Cargo_miembro'];
             $concejosmiembrosEntry->sexo                    =   $data['Sexo'];
             $concejosmiembrosEntry->genero                  =   $data['Genero'];
+            $concejosmiembrosEntry->barrio_vereda        =   $data['Barrio_vereda'];
             $concejosmiembrosEntry->direccion               =   $data['Direccion'];
             $concejosmiembrosEntry->telefono                =   $data['Telefono'];
             $concejosmiembrosEntry->correo                  =   $data['Correo'];
@@ -645,7 +613,6 @@ public function deleteMiembrosConcejo(Response $response,$Id)
        $data = json_decode($request->getBody(),true);
         $this->validator->validate($request,[
             "Id_conncejo_comunitario" =>v::notEmpty(),
-            "Id_barrio_vereda" =>v::notEmpty(),
             "Id_corregimiento" =>v::notEmpty(),
             "Id_tipo_documento" =>v::notEmpty(),
             "Id_orientacion_sexual" =>v::notEmpty(),
@@ -657,6 +624,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
             "Cargo_miembro" =>v::notEmpty(),
             "Sexo" =>v::notEmpty(),
             "Genero" =>v::notEmpty(),
+            "Barrio_vereda" =>v::notEmpty(),
             "Direccion" =>v::notEmpty(),
             "Telefono" =>v::notEmpty(),
             "Correo" =>v::notEmpty(),
@@ -680,7 +648,6 @@ public function deleteMiembrosConcejo(Response $response,$Id)
         try{
                      ConcejosmiembrosEntry::where('ID', '=', $Id)->update([
                         'id_conncejo_comunitario'  =>   $data['Id_conncejo_comunitario'],
-                        'id_barrio_vereda'         =>   $data['Id_barrio_vereda'],
                         'id_corregimiento'         =>   $data['Id_corregimiento'],
                         'id_tipo_documento'        =>   $data['Id_tipo_documento'],
                         'id_orientacion_sexual'    =>   $data['Id_orientacion_sexual'],
@@ -692,6 +659,7 @@ public function deleteMiembrosConcejo(Response $response,$Id)
                         'cargo_miembro'            =>   $data['Cargo_miembro'],
                         'sexo'                     =>   $data['Sexo'],
                         'genero'                   =>   $data['Genero'],
+                        'barrio_vereda'            =>   $data['Barrio_vereda'],
                         'direccion'                =>   $data['Direccion'], 
                         'telefono'                 =>   $data['Telefono'],
                         'correo'                   =>   $data['Correo'],

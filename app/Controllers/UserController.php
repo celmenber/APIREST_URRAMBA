@@ -60,6 +60,26 @@ class UserController
         }
     }
 
+public function verifyAccountPass($password,$Id)
+{
+         $hashedPassword = "";
+
+          $user = $this->userEntry->where(["ID_USER"=>$Id])->get();
+
+         foreach ($user as $users)
+        {
+            $hashedPassword = $users->PASSWORD;
+        }  
+
+       $verify = password_verify($password,$hashedPassword);
+        if($verify==false)
+        {
+            return false;
+        } 
+
+        return true;
+    }
+
     public function handleUser()
     {
        $guestEntries = userEntry::select(
@@ -246,17 +266,29 @@ class UserController
  public function userCambioClave(Request $request,Response $response,$Id)
     {
         $data = json_decode($request->getBody(),true);
-            try{
-                    UserEntry::where('ID_USER', '=', $Id)->update([
-                                     'PASSWORD' => $this->hashPassword($data['DOCUMENTO']),
-                    ]);
 
-                    $userEntries = $this->handleUserId($Id);
+        if($data['VALFORM'] == 1)
+            {
+               $verifyAccountPass = $this->verifyAccountPass($data['PASS_ACTUAL'],$Id); 
+                        if($verifyAccountPass==false)
+                        {
+                            $responseMessage = '101';
+                            return $this->customResponse->is400Response($response,$responseMessage);
+                        }
+
+          }
+
+       try{
+                UserEntry::where('ID_USER', '=', $Id)->update([
+                                     'PASSWORD' => $this->hashPassword($data['PASS_NUEVO']),
+                ]);
+
+                $userEntries = $this->handleUserId($Id);
                     return $this->customResponse->is200Response($response,$userEntries);
                 }catch(Exception $err){
                 $responseMessage = array("err" => $err->getMessage());
                 return $this->customResponse->is400Response($response,$responseMessage);
-            }
+          }
     }
 /* FIN DEL CRUE LOGIUN USER */
 /* DESDE AQUI SE PROCESA EL CRUE DE LA TABLA PERMISO */

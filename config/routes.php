@@ -82,9 +82,10 @@ return function (App $app)
       {
          $app->get("/view-jefehogar",[GrupoFamiliarController::class, 'viewJefeHogar']);
          $app->get("/view-jefehogar/{Id}",[GrupoFamiliarController::class,'viewJefeHogarId']);
-         $app->get("/view-jefehogar-documento/{Doc}",[GrupoFamiliarController::class,'viewJefeHogarDocuments']);
+         $app->post("/view-jefehogar-filtro",[GrupoFamiliarController::class,'viewJefeHogarDocuments']);
          $app->post("/create-jefehogar",[GrupoFamiliarController::class,'createJefeHogar']);
          $app->put("/edit-jefehogar/{Id}",[GrupoFamiliarController::class,'editarJefeHogar']);
+         $app->put("/traslado-jefehogar/{Id}",[GrupoFamiliarController::class,'trasladoJefeHogar']);
          $app->patch("/estado-jefehogar/{Id}",[GrupoFamiliarController::class,'estadoJefeHogar']);
          $app->delete("/delete-jefehogar/{Id}", [GrupoFamiliarController::class, "deleteJefeHogar"]);
       });
@@ -96,6 +97,7 @@ return function (App $app)
          $app->post("/create-nucleofamiliar",[GrupoFamiliarController::class,'createNucleoFamiliar']);
          $app->put("/edit-nucleofamiliar/{Id}",[GrupoFamiliarController::class,'editarNucleoFamiliar']);
          $app->put("/traslado-nucleofamiliar/{Id}",[GrupoFamiliarController::class,'trasladoNucleoFamiliar']);
+         $app->patch("/estado-nucleofamiliar/{Id}",[GrupoFamiliarController::class,'estadoJNucleoFamiliar']);
          $app->delete("/delete-nucleofamiliar/{Id}", [GrupoFamiliarController::class, "deleteNucleoFamiliar"]);
       });
 
